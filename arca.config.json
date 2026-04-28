@@ -1,19 +1,26 @@
 {
     "buildProjects": [
-        "test1",
         "test2",
         "test3"
     ],
     "buildArgs": [
-       {
-        "size": [75, 50]
-       },
-       {
-        "size": [100, 75]
-       },
-       {
-        "size": [125, 100]
-       }
-    ],
-    "mouldType": "twoPart"
+        {
+            "outerWidth": 150,
+            "outerDepth": 150,
+            "outerHeight": 50,
+            "wallThickness": 3
+        },
+        {
+            "outerWidth": 150,
+            "outerDepth": 100,
+            "outerHeight": 37,
+            "wallThickness": 3
+        },
+        {
+            "outerWidth": 150,
+            "outerDepth": 50,
+            "outerHeight": 25,
+            "wallThickness": 3
+        }
+    ]
 }

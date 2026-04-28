@@ -1,6 +1,6 @@
 {
   "name": "arca-foundry-js",
-  "version": "0.2.2-alpha.1",
+  "version": "0.3.0",
   "description": "Salvador Workshop's 3D components and designs, specified in Code-CAD",
   "workspaces": [
     "packages/*"
@@ -9,10 +9,9 @@
   "scripts": {
     "docs": "jsdoc packages -r -d docs -c jsdoc.json --readme readme.md",
     "jscad": "node src/build-jscad.js",
+    "jscad-batch": "node src/build-jscad-batch.js",
     "transform-opt": "node src/build-transform-opt.js",
     "moulds": "node src/build-moulds.js",
-    "build-ext": "npm run build-ext -w swcad-js-ext",
-    "build": "npm run build -w swcad-js-ext",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
