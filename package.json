@@ -1,6 +1,6 @@
 {
   "name": "arca-foundry-js",
-  "version": "0.3.0-alpha.4",
+  "version": "0.3.0-alpha.5",
   "description": "Salvador Workshop's 3D components and designs, specified in Code-CAD",
   "workspaces": [
     "packages/*"

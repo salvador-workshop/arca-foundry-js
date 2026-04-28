@@ -22,22 +22,12 @@ console.log(arcaConfigJsonContent);
 console.log(arcaConfigJsonData);
 console.log(typeof arcaConfigJsonData);
 
-const pEnv = process.env
-const inputProject = pEnv.npm_config_project ? pEnv.npm_config_project : ""
 let detectedProject = false
 let detectedBuildConfigs = false
 let errMsg = ''
 
 console.log('----------------------------------------------------------------\n')
 console.log('> Preparing to run JSCAD with files from `src/input/`...')
-
-let projId = null
-if (!inputProject) {
-    errMsg = '> No project specified!'
-    console.error(errMsg)
-} else {
-    projId = inputProject
-}
 
 const isDirectory = fileName => {
     return lstatSync(fileName).isDirectory();
@@ -77,31 +67,20 @@ if (configHasProjects && configHasBuildArgs) {
     detectedBuildConfigs = true
 }
 
-// if (directoryList.includes(projId)) {
+let buildQueueProjects = []
 if (directoryList.some(r => bProjects.includes(r))) {
     detectedProject = true
+    buildQueueProjects = directoryList.filter(value => bProjects.includes(value));
 }
 
 if (detectedProject && detectedBuildConfigs) {
-    // run JSCAD
-    // exec(cmdString, (err, stdout, stderr) => {
-    //     if (err) {
-    //         console.error();
-    //         console.error("Error:");
-    //         console.error(err);
-    //         console.error();
-    //     }
-    //     console.log(stdout);
-    //     console.error(stderr);
-    // });
-
-    bProjects.forEach(bProject => {
+    buildQueueProjects.forEach(bProject => {
         console.log(`Building ${bProject}...`);
-        bArgs.forEach(bArgOpt => {
+        bArgs.forEach((bArgOpt, idx) => {
             console.log('bArgOpt', bArgOpt);
+            const displayIdx = idx + 1
             const projOutputDir = join(outputDir, bProject)
-            // const cmdString = `npx jscad src/input/${bProject}/ -o output/${bProject}/${bProject}.stl`
-            const cmdString = `npx jscad input/${bProject}/ -gp -o output/`
+            const cmdString = `npx jscad input/${bProject}/ -o output/${bProject}/${bProject}-${displayIdx}.stl`
 
             // create output folder
             try {
@@ -111,6 +90,18 @@ if (detectedProject && detectedBuildConfigs) {
             } catch (err) {
                 console.error(err);
             }
+
+            // run JSCAD
+            exec(cmdString, (err, stdout, stderr) => {
+                if (err) {
+                    console.error();
+                    console.error("Error:");
+                    console.error(err);
+                    console.error();
+                }
+                console.log(stdout);
+                console.error(stderr);
+            });
         })
     })
 } else {
