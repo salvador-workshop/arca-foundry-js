@@ -163,5 +163,5 @@ vite.config.ts.timestamp-*
 # Modelling input/output files
 output/*
 !output/.gitkeep
-src/input/*
-!src/input/.gitkeep
+input/*
+!input/.gitkeep
