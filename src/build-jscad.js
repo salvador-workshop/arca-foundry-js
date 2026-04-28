@@ -27,14 +27,14 @@ if (!inputProject) {
 const isDirectory = fileName => {
     return fs.lstatSync(fileName).isDirectory();
 };
-const inputDirPath = `${__dirname}/input`
-const directoryListLong = fs.readdirSync(inputDirPath)
+const inputDir = join(__dirname, '../input')
+const directoryListLong = fs.readdirSync(inputDir)
     .map(fileName => {
-        return join(inputDirPath, fileName);
+        return join(inputDir, fileName);
     })
     .filter(isDirectory);
 const directoryList = directoryListLong.map(longDir => {
-    const displayDir = relative(inputDirPath, longDir)
+    const displayDir = relative(inputDir, longDir)
     return displayDir
 })
 console.log(directoryListLong)
@@ -45,9 +45,10 @@ if (directoryList.includes(projId)) {
 }
 
 if (detectedProject) {
-    const outputDir = join(inputDirPath, '../../output')
+    const outputDir = join(__dirname, '../output')
     const projOutputDir = join(outputDir, projId)
-    const cmdString = `npx jscad src/input/${projId}/ -o output/${projId}/${projId}.stl`
+    // const cmdString = `npx jscad src/input/${projId}/ -o output/${projId}/${projId}.stl`
+    const cmdString = `npx jscad input/${projId}/ -gp -o output/`
 
     // create output folder
     try {

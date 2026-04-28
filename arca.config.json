@@ -1,0 +1,19 @@
+{
+    "buildProjects": [
+        "test1",
+        "test2",
+        "test3"
+    ],
+    "buildArgs": [
+       {
+        "size": [75, 50]
+       },
+       {
+        "size": [100, 75]
+       },
+       {
+        "size": [125, 100]
+       }
+    ],
+    "mouldType": "twoPart"
+}
