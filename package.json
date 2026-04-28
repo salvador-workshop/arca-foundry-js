@@ -1,5 +1,5 @@
 {
-  "name": "sw-designs-js",
+  "name": "arca-foundry-js",
   "version": "0.2.1",
   "description": "Salvador Workshop's 3D components and designs, specified in Code-CAD",
   "workspaces": [
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/salvador-workshop/sw-components-designs.git"
+    "url": "git+hhttps://github.com/salvador-workshop/arca-foundry-js.git"
   },
   "devDependencies": {
     "@jscad/cli": "^2.3.8",
@@ -31,7 +31,7 @@
   "author": "RJ Salvador (Salvador Workshop)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/salvador-workshop/sw-components-designs/issues"
+    "url": "hhttps://github.com/salvador-workshop/arca-foundry-js/issues"
   },
-  "homepage": "https://github.com/salvador-workshop/sw-components-designs#readme"
+  "homepage": "hhttps://github.com/salvador-workshop/arca-foundry-js"
 }
