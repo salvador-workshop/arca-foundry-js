@@ -165,3 +165,7 @@ output/*
 !output/.gitkeep
 input/*
 !input/.gitkeep
+
+# Example files (feel free to delete)
+!input/example1/
+!input/example2/
