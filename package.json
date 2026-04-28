@@ -1,0 +1,37 @@
+{
+  "name": "sw-designs-js",
+  "version": "0.2.1",
+  "description": "Salvador Workshop's 3D components and designs, specified in Code-CAD",
+  "workspaces": [
+    "packages/*"
+  ],
+  "main": "src/index.js",
+  "scripts": {
+    "docs": "jsdoc packages -r -d docs -c jsdoc.json --readme readme.md",
+    "jscad": "node src/build-jscad.js",
+    "transform-opt": "node src/build-transform-opt.js",
+    "moulds": "node src/build-moulds.js",
+    "build-ext": "npm run build-ext -w swcad-js-ext",
+    "build": "npm run build -w swcad-js-ext",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salvador-workshop/sw-components-designs.git"
+  },
+  "devDependencies": {
+    "@jscad/cli": "^2.3.8",
+    "jsdoc": "^4.0.4"
+  },
+  "keywords": [
+    "jscad",
+    "cad",
+    "3d"
+  ],
+  "author": "RJ Salvador (Salvador Workshop)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/salvador-workshop/sw-components-designs/issues"
+  },
+  "homepage": "https://github.com/salvador-workshop/sw-components-designs#readme"
+}
