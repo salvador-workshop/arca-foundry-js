@@ -80,7 +80,16 @@ if (detectedProject && detectedBuildConfigs) {
             console.log('bArgOpt', bArgOpt);
             const displayIdx = idx + 1
             const projOutputDir = join(outputDir, bProject)
-            const cmdString = `npx jscad input/${bProject}/ -o output/${bProject}/${bProject}-${displayIdx}.stl`
+
+            const generateCmdLineParams = (argObj) => {
+                let cmdLineParamString = ''
+                for (const [paramKey, paramVal] of Object.entries(argObj)) {
+                    cmdLineParamString += `--${paramKey} "${paramVal}" `;
+                }
+                return cmdLineParamString
+            }
+            const cmdLineParams = generateCmdLineParams(bArgOpt)
+            const cmdString = `npx jscad input/${bProject}/ ${cmdLineParams} -o output/${bProject}/${bProject}-${displayIdx}.stl`
 
             // create output folder
             try {

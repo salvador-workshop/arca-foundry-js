@@ -5,22 +5,22 @@
     ],
     "buildArgs": [
         {
-            "size": [
-                75,
-                50
-            ]
+            "outerWidth": 150,
+            "outerDepth": 150,
+            "outerHeight": 50,
+            "wallThickness": 3
         },
         {
-            "size": [
-                100,
-                75
-            ]
+            "outerWidth": 150,
+            "outerDepth": 100,
+            "outerHeight": 37,
+            "wallThickness": 3
         },
         {
-            "size": [
-                125,
-                100
-            ]
+            "outerWidth": 150,
+            "outerDepth": 50,
+            "outerHeight": 25,
+            "wallThickness": 3
         }
     ]
 }
