@@ -9,11 +9,31 @@ import {
 import { dirname, join, relative } from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import {
+    draftUtils as draftUtilsModule
+} from './draft-utils'
 
-const configPath = join(__dirname, '../arca.config.json')
-const inputDir = join(__dirname, '../input')
-const outputDir = join(__dirname, '../output')
+import {
+    // inputDir,
+    // outputDir,
+    internalDir,
+    internalWorkspaceDir,
+    isDirectory,
+    mouldCfgName,
+    mouldSubjectName,
+    baseIndexPathOnePart,
+    baseIndexPathTwoPart,
+    clearInternalDir
+} from './mould-utils.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const utilsDir = __dirname
+const rootDir = join(__dirname, '../..')
+
+const srcDir = join(rootDir, './arca.config.json')
+const configPath = join(rootDir, './arca.config.json')
+const inputDir = join(rootDir, './input')
+const outputDir = join(rootDir, './output')
 
 const arcaConfigJsonContent = readFileSync(configPath);
 
@@ -72,14 +92,32 @@ const formatParamsToCmdString = (modelParameters) => {
 }
 
 export const utils = {
+    rootDir,
+    srcDir,
     configPath,
     inputDir,
     outputDir,
+    utilsDir,
     unpackDate,
     dateTagDay,
     dateTagTime,
     formatParamsToCmdString,
 }
+
+export const draftUtils = draftUtilsModule;
+
+export const mouldUtils = {
+    inputDir,
+    outputDir,
+    internalDir,
+    internalWorkspaceDir,
+    isDirectory,
+    mouldCfgName,
+    mouldSubjectName,
+    baseIndexPathOnePart,
+    baseIndexPathTwoPart,
+    clearInternalDir,
+};
 
 export const arcaConfig = JSON.parse(arcaConfigJsonContent);
 

@@ -3,6 +3,10 @@ import fs from 'node:fs';
 import { join, relative } from 'path';
 
 import {
+    mouldUtils
+} from './utils'
+
+const {
     inputDir,
     outputDir,
     internalDir,
@@ -13,7 +17,7 @@ import {
     baseIndexPathOnePart,
     baseIndexPathTwoPart,
     clearInternalDir
-} from './mould-utils.js'
+} = mouldUtils
 
 const pEnv = process.env
 const inputProject = pEnv.npm_config_project ? pEnv.npm_config_project : ""

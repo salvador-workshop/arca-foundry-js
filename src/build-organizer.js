@@ -12,12 +12,9 @@ import { join, relative } from 'path';
 
 import {
     utils,
-    arcaConfig
-} from './utils'
-
-import {
+    arcaConfig,
     draftUtils
-} from './draft-utils'
+} from './utils'
 
 const inputDir = utils.inputDir
 const outputDir = utils.outputDir
