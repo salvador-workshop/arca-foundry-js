@@ -112,6 +112,7 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
         }
     }
 
+
     /**
      * Initializes options with user input
      * @param {*} opts 
@@ -144,6 +145,7 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
 
         return initOpts
     }
+
 
     /**
      * Builds model properties from the given opts

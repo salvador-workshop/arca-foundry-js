@@ -62,10 +62,12 @@ const {
 const dovetailPostModule = require('./interlock-dovetail/dovetail-post.js')
 const dovetailPost = dovetailPostModule.init({ jscad, swcadJs })
 
+const interlockDovetailModule = require('./interlock-dovetail/index.js')
+const interlockDovetail = interlockDovetailModule.init({ jscad, swcadJs })
 
 //------------------------------------------------------------------------------
 
-const spaceUnit = math.inchesToMm(2)
+const spaceUnit = math.inchesToMm(4.5)
 
 /**
  * Main function to be rendered by JSCAD
@@ -88,10 +90,54 @@ function main() {
         type: 'female'
     })
 
-    return [
-        translate([0, 0, 0], dPost1),
-        translate([0, spaceUnit, 0], dPost2),
+    // return [
+    //     translate([0, 0, 0], dPost1),
+    //     translate([0, spaceUnit, 0], dPost2),
+    // ]
+
+
+    const interlockDovetailOpts = {
+        size: [math.inchesToMm(2.5), math.inchesToMm(3.5)],
+        panelThickness: 1.3333,
+        postThickness: 5,
+        dovetailLength: math.inchesToMm(1 / 2),
+    }
+
+    const interlockDovetailPanel1 = interlockDovetail({
+        ...interlockDovetailOpts,
+        bodyType: 'solid',
+        positionType: 'face',
+    })[0]
+    const interlockDovetailPanel2 = interlockDovetail({
+        ...interlockDovetailOpts,
+        bodyType: 'mesh',
+        positionType: 'side',
+    })[0]
+    const interlockDovetailPanel3 = interlockDovetail({
+        ...interlockDovetailOpts,
+        bodyType: 'lattice',
+        positionType: 'face',
+    })[0]
+    const interlockDovetailPanel4 = interlockDovetail({
+        ...interlockDovetailOpts,
+        bodyType: 'minimal',
+        positionType: 'side',
+    })[0]
+
+    const models = [
+        dPost1,
+        dPost2,
+        interlockDovetailPanel1,
+        interlockDovetailPanel2,
+        interlockDovetailPanel3,
+        interlockDovetailPanel4,
     ]
+
+    const outModels = models.map((oModel, idx) => {
+        return translate([idx * spaceUnit, 0, 0], oModel)
+    })
+
+    return outModels
 }
 
 
