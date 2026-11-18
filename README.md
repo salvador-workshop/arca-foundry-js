@@ -12,9 +12,10 @@ If a JSCAD project exists at `src/input/example1/`, that can be built into an ST
 
 The output model would then be located at `output/example1/example1.stl`
 
-### `npm run jscad-batch`
+### `npm run moulds`
 
-The `jscad-batch` script relies on `arca.config.json` to run.
+Build moulds around an STL model by running:
 
-- `buildProjects`: The project folders to build
-- `buildArgs`: A series of build options that are passed into each build project
+`npm run mould --project="mould-example-1"`
+
+The mould object must be named `model.stl` and placed in the appropriate directory in `input/` (in the above case, `input/mould-example-1/`). That project's output would then be placed in `output/mould-example-1/`
