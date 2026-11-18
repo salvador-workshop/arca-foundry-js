@@ -55,7 +55,12 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
 
     const {
         math,
+        position,
     } = swcadJs.calcs
+
+    const {
+        connections,
+    } = swcadJs.profiles
 
 
     //------------------------------------------------------------
@@ -76,13 +81,14 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
                 interfaceThickness: standards.INTERFACE_THICKNESS,
                 fitGap: standards.FIT_GAP,
             },
-            opts: {},
+            opts: {
+                type: 'male'
+            },
             dims: {
-                size: [
-                    math.inchesToMm(2),
-                    math.inchesToMm(4),
-                    math.inchesToMm(1),
-                ],
+                length: math.inchesToMm(3),
+                thickness: 5,
+                dovetailLength: math.inchesToMm(0.625),
+                fitGap: standards.FIT_GAP,
             },
             points: {},
             components: {},
@@ -93,10 +99,11 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
         }
 
         const defaultOpts = {
-            fitGap: standards.FIT_GAP,
-            size: defaultValues.dims.size,
-            type: defaultValues.types.male.id,
-            interfaceThickness: defaultValues.constants.interfaceThickness,
+            length: defaultValues.dims.length,
+            thickness: defaultValues.dims.thickness,
+            dovetailLength: defaultValues.dims.dovetailLength,
+            type: defaultValues.opts.type,
+            fitGap: defaultValues.dims.fitGap,
         }
 
         return {
@@ -118,16 +125,18 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
 
         // User options
         const {
-            size = defaults.opts.size,
+            length = defaults.opts.length,
+            thickness = defaults.opts.thickness,
+            dovetailLength = defaults.opts.dovetailLength,
             type = defaults.opts.type,
-            interfaceThickness = defaults.opts.interfaceThickness,
             fitGap = defaults.opts.fitGap,
         } = opts
 
         const initOpts = {
-            size,
+            length,
+            thickness,
+            dovetailLength,
             type,
-            interfaceThickness,
             fitGap,
         }
 
@@ -148,18 +157,15 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
         console.log('dovetailPostProps() -- prop opts', opts)
 
         const {
-            size,
+            length,
+            thickness,
+            dovetailLength,
             type,
-            interfaceThickness,
             fitGap,
         } = opts
 
         //----------------------------------------
         // Prop calculations
-
-        const width = size[0]
-        const depth = size[1]
-        const height = size[2]
 
         //----------------------------------------
         // Preparing Model Properties, Dimensions
@@ -174,11 +180,9 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
 
         /** Various dimensions for model */
         const modelDims = {
-            size,
-            width,
-            depth,
-            height,
-            interfaceThickness,
+            length,
+            thickness,
+            dovetailLength,
             fitGap,
         }
 
@@ -212,19 +216,102 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
 
 
     const dovetailPostBlank = (opts) => {
-        return null
+        const {
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        } = opts
+
+        const fitAdj = fitGap / 2
+        const fitHeight = thickness - fitAdj
+        const cutawayHeight = thickness / 2
+        const cutawayWidth = thickness / 2 + fitAdj
+
+        let postBlank = cuboid({ size: [length, thickness, fitHeight] })
+        postBlank = align({ modes: ['center', 'max', 'max'] }, postBlank)
+
+        let cutaway = cuboid({ size: [length, cutawayWidth, cutawayHeight] })
+        cutaway = align({ modes: ['center', 'max', 'max'] }, cutaway)
+
+        let dPostBlank = subtract(postBlank, cutaway)
+        if (type == 'female') {
+            dPostBlank = rotate([TAU / 4, 0, 0], dPostBlank)
+            dPostBlank = rotate([0, 0, TAU / 2], dPostBlank)
+        }
+
+        return position.ctrMin(dPostBlank)
     }
 
     const dovetailPostCutaway = (opts) => {
+        const {
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        } = opts
+
         return null
     }
 
     const dovetailPostDovetailProfile = (opts) => {
-        return null
+        const {
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        } = opts
+
+        const connectionEdgeMargin = thickness / 2
+        const dovetailsGap = connectionEdgeMargin * 2
+        const dovetailUnits = Math.floor(length / dovetailLength)
+
+        const dovetailRowProfiles = connections.tabRow.dovetailRow({
+            size: [length, thickness * 1.5],
+            numConnectors: dovetailUnits,
+            interfaceMargin: [dovetailsGap, connectionEdgeMargin],
+            fitGap,
+        })[0]
+
+        const maleDovetailRowProfile = dovetailRowProfiles[0]
+        const femaleDovetailRowProfile = dovetailRowProfiles[1]
+
+        let dPostDovetailProfile = maleDovetailRowProfile
+        if (type == 'female') {
+            dPostDovetailProfile = femaleDovetailRowProfile
+            dPostDovetailProfile = rotate([0, 0, TAU / 2], dPostDovetailProfile)
+        }
+
+        return dPostDovetailProfile
     }
 
-    const dovetailPostDovetails = (opts) => {
-        return null
+    const dovetailPostDovetailEdge = (opts) => {
+        const {
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        } = opts
+
+        const extrudeHeightGrooves = thickness * 1.25
+        const extrudeHeightDovetails = thickness * 0.75
+        const dPostDovetailProfile = dovetailPostDovetailProfile(opts)
+
+        let dovetailEdge = null
+        if (type == 'female') {
+            const dPostDovetailGrooves = extrudeLinear({ height: extrudeHeightGrooves }, dPostDovetailProfile)
+            dovetailEdge = dPostDovetailGrooves
+        } else {
+            const dPostDovetails = extrudeLinear({ height: extrudeHeightDovetails }, dPostDovetailProfile)
+            dovetailEdge = dPostDovetails
+            dovetailEdge = rotate([TAU / 4, 0, 0], dovetailEdge)
+        }
+
+        return dovetailEdge
     }
 
 
@@ -244,20 +331,34 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
      * @returns {geom3} JSCAD 3D geometry
      */
     const dovetailPost = (opts) => {
+        const inOpts = dovetailPostOpts(opts)
         const {
             length,
             thickness,
             dovetailLength,
             type,
             fitGap,
-        } = opts
+        } = inOpts
 
-        const dPostBlank = dovetailPostBlank(opts)
-        const dPostCutaway = dovetailPostCutaway(opts)
-        const dPostDovetailProfile = dovetailPostDovetailProfile(opts)
-        const dPostDovetails = dovetailPostDovetails(opts)
+        const dPostBlank = dovetailPostBlank(inOpts)
+        const dPostCutaway = dovetailPostCutaway(inOpts)
+        const dPostDovetailProfile = dovetailPostDovetailProfile(inOpts)
+        const dPostDovetailEdge = dovetailPostDovetailEdge(inOpts)
 
-        return null
+        let dovetailPostAssembly = null
+        if (type == 'male') {
+            dovetailPostAssembly = union(
+                align({ modes: ['center', 'max', 'min'] }, dPostBlank),
+                align({ modes: ['center', 'max', 'min'] }, dPostDovetailEdge),
+            )
+        } else {
+            dovetailPostAssembly = intersect(
+                align({ modes: ['center', 'min', 'min'] }, dPostBlank),
+                align({ modes: ['center', 'min', 'min'] }, dPostDovetailEdge),
+            )
+        }
+
+        return position.ctr(dovetailPostAssembly)
     }
 
     return dovetailPost
