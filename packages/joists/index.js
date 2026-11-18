@@ -63,11 +63,14 @@ const {
     layout,
 } = swcadJs.utils
 
-const dowelJoistPanelModule = require('./src/dowel-joist-panel.js')
-const dowelJoistPanel = dowelJoistPanelModule.init({ jscad, swcadJs })
+const dowelAssemblyFittingsModule = require('./src/dowel-joist-panel-fittings.js')
+const dowelAssemblyFittings = dowelAssemblyFittingsModule.init({ jscad, swcadJs })
 
-const dowelJoistSetModule = require('./src/dowel-joist-set.js')
-const dowelJoistSet = dowelJoistSetModule.init({ jscad, swcadJs })
+const railFramesModule = require('./src/rail-frames.js')
+const railFrames = railFramesModule.init({ jscad, swcadJs })
+
+const rightAngleBracketsModule = require('./src/right-angle-brackets.js')
+const rightAngleBrackets = rightAngleBracketsModule.init({ jscad, swcadJs })
 
 //==============================================================================
 
@@ -76,119 +79,151 @@ const dowelJoistSet = dowelJoistSetModule.init({ jscad, swcadJs })
  * Model / Scene Prep
  * ------------------------------------- */
 
-const spaceUnit = math.inchesToMm(2)
-const layoutOpts = {
-    layoutMargin: math.inchesToMm(2),
-    layoutSpace: spaceUnit,
-}
-
-/* ----------------------------------------
- * Dowel Joists
- * ------------------------------------- */
-
-const commonJoistOpts = {
+const commonOpts = {
     // dowelRadius: 8.5 / 2,
     dowelRadius: 3.5 / 2,
     dowelCtrDistance: math.inchesToMm(1.25),
-    length: 100,
 }
 
-const dowelJoistPanelOpts1 = {
-    ...commonJoistOpts,
+const commonRailFrameOpts = {
+    ...commonOpts,
+    joistCtrDistance: 180,
+    width: 100,
 }
 
-const dowelJoistPanelOpts2 = {
-    ...commonJoistOpts,
-    reinforcementLevel: 2
+const rightAngleBracketsOpts = {
+    ...commonOpts,
+    widthToJoistCtr: math.inchesToMm(1.5),
+    depthToJoistCtr: math.inchesToMm(1.5),
+    height: math.inchesToMm(1 / 8),
+    thickness: math.inchesToMm(5 / 32),
 }
 
-const dowelJoistPanelOpts3 = {
-    ...commonJoistOpts,
-    dovetailOpt: 'male'
+
+//------------------------------------------------------------------------------
+
+const panelWidth = math.inchesToMm(4)
+const panelLength = math.inchesToMm(4)
+const panelOffsetTotal = math.inchesToMm(1 / 16)
+const panelDowelDiam = 3.25
+const panelDowelRadius = panelDowelDiam / 2
+
+
+// const angleConnectorData = dowelAssemblyFittings.angleConnector({
+//     ...commonOpts,
+// })
+// const angleConnectorModel = angleConnectorData[0]
+// const angleConnectorProps = angleConnectorData[2]
+// console.log('angleConnectorProps', angleConnectorProps)
+
+// const angleCornerConnectorData = dowelAssemblyFittings.angleCornerConnector({
+//     ...commonOpts,
+// })
+// const angleCornerConnectorModel = angleCornerConnectorData[0]
+// const angleCornerConnectorProps = angleCornerConnectorData[2]
+// console.log('angleCornerConnectorProps', angleCornerConnectorProps)
+
+// const flatConnectorData = dowelAssemblyFittings.flatConnector({
+//     ...commonOpts,
+// })
+// const flatConnectorModel = flatConnectorData[0]
+// const flatConnectorProps = flatConnectorData[2]
+// console.log('flatConnectorProps', flatConnectorProps)
+
+// const mortiseConnectorData = dowelAssemblyFittings.mortiseConnector({
+//     ...commonOpts,
+// })
+// const mortiseConnectorModel = mortiseConnectorData[0]
+// const mortiseConnectorProps = mortiseConnectorData[2]
+// console.log('mortiseConnectorProps', mortiseConnectorProps)
+
+// const endConnectorData = dowelAssemblyFittings.endConnector({
+//     ...commonOpts,
+// })
+// const endConnectorModel = endConnectorData[0]
+// const endConnectorProps = endConnectorData[2]
+// console.log('endConnectorProps', endConnectorProps)
+
+const baseRail = railFrames.baseRailFrame({
+    ...commonRailFrameOpts
+})[0]
+
+const simpleRailFrame = railFrames.simpleRailFrame({
+    ...commonRailFrameOpts
+})[0]
+
+const simpleJoistRailBracket = railFrames.simpleJoistRailBracket({
+    ...commonRailFrameOpts
+})[0]
+
+const joistRailBracket = railFrames.joistRailBracket({
+    ...commonRailFrameOpts
+})[0]
+
+const singleRailFrame = railFrames.singleRailFrame({
+    ...commonRailFrameOpts
+})[0]
+
+const doubleRailFrame = railFrames.doubleRailFrame({
+    ...commonRailFrameOpts
+})[0]
+
+const rightAngleColumnBracketInt = rightAngleBrackets.rightAngleColumnBracket({
+    ...rightAngleBracketsOpts
+})[0]
+
+const rightAngleColumnBracketExt = rightAngleBrackets.rightAngleColumnBracket({
+    ...rightAngleBracketsOpts,
+    orientation: 'external'
+})[0]
+
+
+const layoutOpts = {
+    layoutMargin: math.inchesToMm(2),
+    layoutSpace: math.inchesToMm(2),
 }
 
-const dowelJoistPanelOpts4 = {
-    ...commonJoistOpts,
-    dovetailOpt: 'female'
-}
-
-const dowelJoistPanelOpts5 = {
-    ...commonJoistOpts,
-    dowelHolderType: 'single'
-}
-const dowelJoistPanelOpts6 = {
-    ...commonJoistOpts,
-    dowelHolderType: 'inverse'
-}
-
-const dowelJoistPanel1 = dowelJoistPanel(dowelJoistPanelOpts1)[0]
-const dowelJoistPanel2 = dowelJoistPanel(dowelJoistPanelOpts2)[0]
-const dowelJoistPanel3 = dowelJoistPanel(dowelJoistPanelOpts3)[0]
-const dowelJoistPanel4 = dowelJoistPanel(dowelJoistPanelOpts4)[0]
-const dowelJoistPanel5 = dowelJoistPanel(dowelJoistPanelOpts5)[0]
-const dowelJoistPanel6 = dowelJoistPanel(dowelJoistPanelOpts6)[0]
-
-/* ----------------------------------------
- * Dowel Joist Sets
- * ------------------------------------- */
-
-const commonJoistSetOpts = {
-    dowelRadius: 3.5 / 2,
-    dowelCtrDistance: math.inchesToMm(1.25),
-    unitLength: math.inchesToMm(1),
-}
-
-// const dowelJoistSet1 = dowelJoistSet({
-//     ...commonJoistSetOpts,
-//     length: 120,
-//     numSegments: 1,
-// })[0]
-
-// const dowelJoistSet2 = dowelJoistSet({
-//     ...commonJoistSetOpts,
-//     length: 120,
-//     numSegments: 2,
-// })[0]
-
-// const dowelJoistSet3 = dowelJoistSet({
-//     ...commonJoistSetOpts,
-//     length: 180,
-//     numSegments: 3,
-// })[0]
-
-// const dowelJoistSet4 = dowelJoistSet({
-//     ...commonJoistSetOpts,
-//     length: 300,
-//     numSegments: 5,
-// })[0]
 
 /**
  * Main function to be rendered by JSCAD
  * @returns `geom3` or `geom3[]`
  */
 function main() {
-    /* ----------------------------------------
-    * Dowel Joists
-    * ------------------------------------- */
+    // layout.addToLayout({
+    //     name: 'angleConnectorModel',
+    //     desc: '...',
+    //     layoutOpts,
+    // }, angleConnectorModel);
 
-    return [
-        translate([spaceUnit * 0, spaceUnit * 0, spaceUnit * 0], dowelJoistPanel1),
-        translate([spaceUnit * 1, spaceUnit * 0, spaceUnit * 0], dowelJoistPanel2),
-        translate([spaceUnit * 2, spaceUnit * 0, spaceUnit * 0], dowelJoistPanel3),
-        translate([spaceUnit * 3, spaceUnit * 0, spaceUnit * 0], dowelJoistPanel4),
-        translate([spaceUnit * 0, spaceUnit * 2.5, spaceUnit * 0], dowelJoistPanel5),
-        translate([spaceUnit * 1, spaceUnit * 2.5, spaceUnit * 0], dowelJoistPanel6),
-    ]
+    // layout.addToLayout({
+    //     name: 'angleCornerConnectorModel',
+    //     desc: '...',
+    //     layoutOpts,
+    // }, angleCornerConnectorModel);
 
-    /* ----------------------------------------
-    * Dowel Joist Sets
-    * ------------------------------------- */
+    // layout.addToLayout({
+    //     name: 'flatConnectorModel',
+    //     desc: '...',
+    //     layoutOpts,
+    // }, flatConnectorModel);
 
-    // const joistOuts = dowelJoistSet3.map((dJoistSegment, idx) => {
-    //     return translate([spaceUnit * idx, spaceUnit * 0, spaceUnit * 0], dJoistSegment)
-    // })
+    // layout.addToLayout({
+    //     name: 'mortiseConnectorModel',
+    //     desc: '...',
+    //     layoutOpts,
+    // }, mortiseConnectorModel);
 
-    // return joistOuts
+    // layout.addToLayout({
+    //     name: 'endConnectorModel',
+    //     desc: '...',
+    //     layoutOpts,
+    // }, endConnectorModel);
+
+    // const layoutContent = layout.gridLayout({ layoutOpts });
+
+    // return layoutContent;
+
+    return simpleJoistRailBracket
 }
 
 

@@ -54,8 +54,8 @@ const { colorize } = jscad.colors
 
 const swcadJs = require('swcad-js').init({ jscad });
 
-const dowelReinforcedMeshPanelModule = require('./src/index.js')
-const dowelReinforcedMeshPanel = dowelReinforcedMeshPanelModule.init({ jscad, swcadJs })
+const reinforcedMeshPanelModule = require('./src/index.js')
+const reinforcedMeshPanel = reinforcedMeshPanelModule.init({ jscad, swcadJs })
 
 const inchesToMm = (numIn) => numIn * 25.4
 
@@ -67,29 +67,34 @@ const inchesToMm = (numIn) => numIn * 25.4
  * Test subjects
  * ------------------------------------- */
 
-const baseMesh = dowelReinforcedMeshPanel.baseMeshPanel({
-    size: [inchesToMm(4), inchesToMm(4)],
+const baseMesh = reinforcedMeshPanel.baseMeshPanel({
+    size: [inchesToMm(4), inchesToMm(4), inchesToMm(1 / 8)],
+    reinforcementThickness: [5, 4, 3],
     meshEdgeMargin: inchesToMm(1 / 8),
     meshHoleRadius: inchesToMm(1 / 8),
     meshHoleDistance: inchesToMm(5 / 16),
 })[0]
 
-const panelDowelHolders = dowelReinforcedMeshPanel.panelDowelHolders({
-    size: [inchesToMm(6), inchesToMm(3)],
+const baseReinf = reinforcedMeshPanel.basePanelReinforcement({
+    size: [inchesToMm(4), inchesToMm(4), inchesToMm(1 / 8)],
+    reinforcementThickness: [5, 4, 3],
     meshEdgeMargin: inchesToMm(1 / 8),
     meshHoleRadius: inchesToMm(1 / 8),
     meshHoleDistance: inchesToMm(5 / 16),
 })[0]
 
-const reinfMeshPanel1 = dowelReinforcedMeshPanel.dowelReinforcedMeshPanel({
-    size: [inchesToMm(4), inchesToMm(4)],
+const reinfMeshPanel1 = reinforcedMeshPanel.reinforcedMeshPanel({
+    size: [inchesToMm(4), inchesToMm(4), inchesToMm(1 / 8)],
+    reinforcementThickness: [5, 4, 3],
     meshEdgeMargin: inchesToMm(1 / 8),
     meshHoleRadius: inchesToMm(1 / 8),
     meshHoleDistance: inchesToMm(5 / 16),
+    reinforcementPattern: 'cross',
 })[0]
 
-const reinfMeshPanel2 = dowelReinforcedMeshPanel.dowelReinforcedMeshPanel({
-    size: [inchesToMm(6), inchesToMm(3)],
+const reinfMeshPanel2 = reinforcedMeshPanel.reinforcedMeshPanel({
+    size: [inchesToMm(6), inchesToMm(3), inchesToMm(1 / 8)],
+    reinforcementThickness: [5, 4, 3],
     meshEdgeMargin: inchesToMm(1 / 8),
     meshHoleRadius: inchesToMm(1 / 8),
     meshHoleDistance: inchesToMm(5 / 16),
@@ -119,8 +124,6 @@ function main() {
         translate([spaceUnit * 0, spaceUnit * 0, spaceUnit * 0], reinfMeshPanel1),
         translate([spaceUnit * 0, spaceUnit * 1, spaceUnit * 0], reinfMeshPanel2),
     ]
-
-    // return panelDowelHolders
 }
 
 

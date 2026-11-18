@@ -1,7 +1,7 @@
 {
-  "name": "hooks",
-  "version": "0.2.2",
-  "description": "ARCA hooks generator",
+  "name": "panels",
+  "version": "0.4.1-alpha.0",
+  "description": "ARCA panels generator",
   "homepage": "",
   "main": "index.js",
   "scripts": {
