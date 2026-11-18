@@ -99,7 +99,7 @@ function main() {
     const interlockDovetailOpts = {
         size: [math.inchesToMm(2.5), math.inchesToMm(3.5)],
         panelThickness: 1.3333,
-        postThickness: 5,
+        postThickness: 4,
         dovetailLength: math.inchesToMm(1 / 2),
     }
 
