@@ -65,6 +65,9 @@ const dovetailPost = dovetailPostModule.init({ jscad, swcadJs })
 const interlockDovetailModule = require('./interlock-dovetail/index.js')
 const interlockDovetail = interlockDovetailModule.init({ jscad, swcadJs })
 
+const groovedBaseModule = require('./grooved-base/index.js')
+const groovedBase = groovedBaseModule.init({ jscad, swcadJs })
+
 //------------------------------------------------------------------------------
 
 const spaceUnit = math.inchesToMm(4.5)
@@ -115,13 +118,30 @@ function main() {
     })[0]
     const interlockDovetailPanel3 = interlockDovetail({
         ...interlockDovetailOpts,
-        bodyType: 'lattice',
+        bodyType: 'minimal',
         positionType: 'face',
     })[0]
     const interlockDovetailPanel4 = interlockDovetail({
         ...interlockDovetailOpts,
         bodyType: 'minimal',
         positionType: 'side',
+    })[0]
+
+    const groovedBaseOpts = {
+        footingSize: [math.inchesToMm(2.5), math.inchesToMm(2.5) + 4],
+        thickness: 1.3333,
+        postThickness: 4,
+        panelType: 'minimal',
+    }
+
+    const gBase1 = groovedBase({
+        ...groovedBaseOpts,
+        type: 'wrap'
+    })[0]
+
+    const gBase2 = groovedBase({
+        ...groovedBaseOpts,
+        type: 'flush'
     })[0]
 
     const models = [
@@ -131,6 +151,8 @@ function main() {
         interlockDovetailPanel2,
         interlockDovetailPanel3,
         interlockDovetailPanel4,
+        gBase1,
+        gBase2,
     ]
 
     const outModels = models.map((oModel, idx) => {
@@ -138,6 +160,8 @@ function main() {
     })
 
     return outModels
+    
+    // return gBase2
 }
 
 

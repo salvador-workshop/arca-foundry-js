@@ -57,7 +57,11 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
 
     const {
         math,
+        position,
     } = swcadJs.calcs
+
+    const polyPanelModule = require('../poly-panel/index.js')
+    const polyPanel = polyPanelModule.init({ jscad, swcadJs })
 
 
     //==============================================================================
@@ -71,31 +75,41 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
      * @access private
      */
     const groovedBaseDefaults = () => {
+        const interfaceThickness = standards.INTERFACE_THICKNESS
+        const fitGap = standards.FIT_GAP
+
         const defaultValues = {
             constants: {
-                interfaceThickness: standards.INTERFACE_THICKNESS,
+                panelTypes: ['solid', 'mesh', 'lattice', 'minimal'],
             },
-            opts: {},
+            opts: {
+                type: 'wrap',
+                panelType: 'solid',
+            },
             dims: {
-                size: [
+                footingSize: [
                     math.inchesToMm(2),
                     math.inchesToMm(4),
-                    math.inchesToMm(1),
                 ],
+                thickness: interfaceThickness,
+                postThickness: 5,
+                fitGap,
             },
             points: {},
             components: {},
             types: {
-                default: { id: 'default', desc: 'Default model' },
-                alt: { id: 'alt', desc: 'Alternate model' },
+                wrap: { id: 'wrap', desc: 'Base w/ groove completely wrapping around beam.' },
+                flush: { id: 'flush', desc: 'Base w/ groove partially wrapping around beam.' },
             },
         }
 
         const defaultOpts = {
-            fitGap: standards.FIT_GAP,
-            size: defaultValues.dims.size,
-            type: defaultValues.types.default.id,
-            interfaceThickness: defaultValues.constants.interfaceThickness,
+            footingSize: defaultValues.dims.footingSize,
+            thickness: defaultValues.dims.thickness,
+            postThickness: defaultValues.dims.postThickness,
+            type: defaultValues.opts.type,
+            panelType: defaultValues.opts.panelType,
+            fitGap: defaultValues.dims.fitGap,
         }
 
         return {
@@ -121,16 +135,20 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
 
         // User options
         const {
-            size = defaults.opts.size,
+            footingSize = defaults.opts.footingSize,
+            thickness = defaults.opts.thickness,
+            postThickness = defaults.opts.postThickness,
             type = defaults.opts.type,
-            interfaceThickness = defaults.opts.interfaceThickness,
+            panelType = defaults.opts.panelType,
             fitGap = defaults.opts.fitGap,
         } = opts
 
         const initOpts = {
-            size,
+            footingSize,
+            thickness,
+            postThickness,
             type,
-            interfaceThickness,
+            panelType,
             fitGap,
         }
 
@@ -155,9 +173,11 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         console.log('groovedBaseProps() -- prop opts', opts)
 
         const {
-            size,
+            footingSize,
+            thickness,
+            postThickness,
             type,
-            interfaceThickness,
+            panelType,
             fitGap,
         } = opts
 
@@ -165,9 +185,21 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         * Prop calculations
         * ------------------------------------- */
 
-        const width = size[0]
-        const depth = size[1]
-        const height = size[2]
+        const footingLength = footingSize[0]
+        const footingWidth = footingSize[1]
+
+        const wrapExtensionWidth = thickness + (fitGap / 2)
+        const panelExtensiontWidth = type == 'flush' ? 0 : wrapExtensionWidth * 2
+        const panelSize = [
+            footingSize[0] + panelExtensiontWidth,
+            footingSize[1] + panelExtensiontWidth,
+        ]
+        const panelLength = panelSize[0]
+        const panelWidth = panelSize[1]
+
+        const grooveWidth = postThickness + fitGap
+        const grooveHeight = postThickness * 0.6667
+        const grooveWallHeight = grooveHeight + thickness
 
         /* ----------------------------------------
         * Preparing Model Properties, Dimensions
@@ -179,16 +211,23 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         /** Derived user options for the model */
         const modelOpts = {
             type,
+            panelType,
         }
 
         /** Various dimensions for model */
         const modelDims = {
-            size,
-            width,
-            depth,
-            height,
-            interfaceThickness,
+            footingSize,
+            thickness,
+            postThickness,
             fitGap,
+            footingLength,
+            footingWidth,
+            panelSize,
+            panelLength,
+            panelWidth,
+            grooveWidth,
+            grooveHeight,
+            grooveWallHeight,
         }
 
         /** Various key points for model */
@@ -224,48 +263,112 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
     * ------------------------------------- */
 
     /** Sub-component 01 */
-    const subcomponent1 = (modelProps) => {
+    const exteriorGrooveWalls = (opts) => {
         const {
-            opts,
-            dims,
-            points,
-        } = modelProps
+            thickness,
+            panelLength,
+            panelWidth,
+            grooveWallHeight,
+        } = opts
 
-        return sphere()
+        const extGrooveWallX = cuboid({
+            size: [
+                panelLength,
+                thickness,
+                grooveWallHeight,
+            ]
+        })
+
+        const extGrooveWallY = cuboid({
+            size: [
+                thickness,
+                panelWidth,
+                grooveWallHeight,
+            ]
+        })
+
+        const extWalls = union(
+            align({
+                modes: ['center', 'min', 'center'],
+                relativeTo: [0, panelWidth / -2, 0]
+            }, extGrooveWallX),
+            align({
+                modes: ['min', 'center', 'center'],
+                relativeTo: [panelLength / -2, 0, 0]
+            }, extGrooveWallY),
+            align({
+                modes: ['center', 'max', 'center'],
+                relativeTo: [0, panelWidth / 2, 0]
+            }, extGrooveWallX),
+            align({
+                modes: ['max', 'center', 'center'],
+                relativeTo: [panelLength / 2, 0, 0]
+            }, extGrooveWallY),
+        )
+
+        return extWalls
     }
 
     /** Sub-component 02 */
-    const subcomponent2 = (modelProps) => {
+    const interiorGrooveWalls = (opts) => {
         const {
-            opts,
-            dims,
-            points,
-        } = modelProps
+            thickness,
+            postThickness,
+            fitGap,
+            footingLength,
+            footingWidth,
+            grooveWallHeight,
+        } = opts
 
-        return cube()
-    }
+        const intMargin = postThickness + (fitGap / 2)
+        const innerFtgEdgeDistX = footingLength - (intMargin * 2)
+        const innerFtgEdgeDistY = footingWidth - (intMargin * 2)
 
-    /* ----------------------------------------
-     * Complete Assembly
-     * ------------------------------------- */
+        const intGrooveWallX = cuboid({
+            size: [
+                innerFtgEdgeDistX,
+                thickness,
+                grooveWallHeight,
+            ]
+        })
 
-    /** Final Assembly */
-    const finalAssembly = (modelProps) => {
-        let subComp1 = subcomponent1(modelProps)
-        let subComp2 = subcomponent2(modelProps)
+        const intGrooveWallY = cuboid({
+            size: [
+                thickness,
+                innerFtgEdgeDistY,
+                grooveWallHeight,
+            ]
+        })
 
-        return union(
-            subComp1,
-            subComp2,
+        const intWalls = union(
+            align({
+                modes: ['center', 'min', 'center'],
+                relativeTo: [0, innerFtgEdgeDistY / -2, 0]
+            }, intGrooveWallX),
+            align({
+                modes: ['min', 'center', 'center'],
+                relativeTo: [innerFtgEdgeDistX / -2, 0, 0]
+            }, intGrooveWallY),
+            align({
+                modes: ['center', 'max', 'center'],
+                relativeTo: [0, innerFtgEdgeDistY / 2, 0]
+            }, intGrooveWallX),
+            align({
+                modes: ['max', 'center', 'center'],
+                relativeTo: [innerFtgEdgeDistX / 2, 0, 0]
+            }, intGrooveWallY),
         )
+
+        return intWalls
     }
 
     /**
      * Generates a new model
      * @param {Object} opts - Options for the model
-     * @param {number[]} opts.size
-     * @param {string} opts.type
-     * @param {number} opts.reinforcementThickness
+     * @param {number[]} opts.footingSize - 2D coord (length, width) of bearing surfaces
+     * @param {number} opts.thickness - thickness of this panel
+     * @param {number} opts.postThickness - thickness of post/beam that fits against this panel
+     * @param {string} opts.type - one of ['wrap', 'flush']
      * @param {number} opts.fitGap
      * @returns {Array.<(geom3|Object.<string, geom3>|Object.<string, any>)>} Array with model, parts, and properties
      * @memberof newModelParent
@@ -275,18 +378,70 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         const initOpts = groovedBaseOpts(opts)
         const modelProperties = groovedBaseProps(initOpts)
 
+        const {
+            type,
+            panelType,
+        } = modelProperties.opts
+
+        const {
+            footingSize,
+            thickness,
+            postThickness,
+            fitGap,
+            footingLength,
+            footingWidth,
+            panelSize,
+            panelLength,
+            panelWidth,
+            grooveWidth,
+            grooveHeight,
+            grooveWallHeight,
+        } = modelProperties.dims
+
         /* ----------------------------------------
          * Outputs
          * ------------------------------------- */
 
-        let subComp1 = subcomponent1(modelProperties)
-        let subComp2 = subcomponent2(modelProperties)
+        const polyPanelOpts = {
+            size: panelSize,
+            thickness,
+            type: panelType,
+        }
 
-        let mainModel = finalAssembly(modelProperties)
+        const basePanel = polyPanel(polyPanelOpts)[0]
+        let intGrooveWalls = interiorGrooveWalls({
+            thickness,
+            postThickness,
+            fitGap,
+            footingLength,
+            footingWidth,
+            grooveWallHeight,
+        })
+        let extGrooveWalls = exteriorGrooveWalls({
+            thickness,
+            panelLength,
+            panelWidth,
+            grooveWallHeight,
+        })
 
-        let modelParts = {
-            subcomponent1: subComp1,
-            subcomponent2: subComp2,
+        let groovedBaseAssembly = union(
+            position.ctrMin(basePanel),
+            position.ctrMin(intGrooveWalls),
+        )
+
+        if (type == 'wrap') {
+            groovedBaseAssembly = union(
+                position.ctrMin(extGrooveWalls),
+                position.ctrMin(groovedBaseAssembly),
+            )
+        }
+
+        const mainModel = groovedBaseAssembly
+
+        const modelParts = {
+            mainModel,
+            extGrooveWalls,
+            intGrooveWalls,
         }
 
         return [mainModel, modelParts, modelProperties]
