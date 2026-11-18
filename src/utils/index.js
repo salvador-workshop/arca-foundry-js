@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 
 import {
     draftUtils as draftUtilsModule
-} from './draft-utils'
+} from './draft-utils.js'
 
 import {
     // inputDir,

@@ -114,6 +114,7 @@ const castingMouldInit = ({ jscad, swcadJs }) => {
             constants: {
                 textLineHeight,
                 textLineHtUnit: textLineHeight * -2.5,
+                phi: 1.6180339887,
             },
             dims: {
             },
@@ -232,6 +233,7 @@ const castingMouldInit = ({ jscad, swcadJs }) => {
         * ------------------------------------- */
 
         const subjectSize = measureDimensions(subject)
+        const phi = defaults.vals.constants.phi
 
         const mouldMargin = interfaceThickness
         const mouldSize = [
@@ -267,7 +269,7 @@ const castingMouldInit = ({ jscad, swcadJs }) => {
         const alignmentPinHeight = mouldPartHeight + interfaceThickness
         const alignmentPinMax = baseplateMargin
         const alignmentPinSize = [
-            alignmentPinMax * constants.PHI,
+            alignmentPinMax * phi,
             alignmentPinMax
         ]
         const alignmentPinDistUnitSize = [
@@ -582,7 +584,7 @@ const castingMouldInit = ({ jscad, swcadJs }) => {
             interfaceThickness,
         } = modelProps.dims
 
-        const connTabData = connections.tab({
+        const connTabData = connections.tab.tab({
             size: alignmentPinSize,
             interfaceMargin: interfaceThickness,
         })

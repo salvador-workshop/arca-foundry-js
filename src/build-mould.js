@@ -4,7 +4,7 @@ import { join, relative } from 'path';
 
 import {
     mouldUtils
-} from './utils'
+} from './utils/index.js'
 
 const {
     inputDir,
@@ -77,6 +77,15 @@ if (detectedProject) {
     }
 
     // set up internal directory
+    try {
+        if (!fs.existsSync(internalDir)) {
+            fs.mkdirSync(internalDir);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+
+    // set up internal workspace directory
     const projInternalDir = internalWorkspaceDir
     try {
         clearInternalDir()

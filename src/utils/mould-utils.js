@@ -2,7 +2,9 @@ import fs from 'node:fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
-export const srcDir = dirname(fileURLToPath(import.meta.url));
+export const utilsDir = dirname(fileURLToPath(import.meta.url));
+
+export const srcDir = join(utilsDir, '..')
 export const rootDir = join(srcDir, '..')
 export const inputDir = join(srcDir, '../input')
 export const outputDir = join(srcDir, '../output')
