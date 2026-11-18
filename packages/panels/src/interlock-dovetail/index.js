@@ -67,6 +67,9 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
     const dovetailPostModule = require('./dovetail-post.js')
     const dovetailPost = dovetailPostModule.init({ jscad, swcadJs })
 
+    const polyPanelModule = require('../poly-panel/index.js')
+    const polyPanel = polyPanelModule.init({ jscad, swcadJs })
+
 
     //------------------------------------------------------------
     // Model Internal Functions
@@ -263,62 +266,6 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
     //------------------------------------------------------------
 
 
-    const panelBody = (opts) => {
-        const {
-            panelSize,
-            panelThickness,
-            postThickness,
-            bodyType,
-        } = opts
-
-        let pBody = null
-        const panelHoleRadius = math.inchesToMm(7 / 32)
-        const panelHoleDiam = panelHoleRadius * 2
-        const panelHoleDist = panelHoleDiam + (postThickness * 0.75)
-
-        if (bodyType == 'mesh') {
-            const meshOpts = {
-                size: panelSize,
-                edgeMargin: panelThickness,
-                holeRadius: panelHoleRadius,
-                holeDistance: panelHoleDist,
-                holePattern: 'tri',
-            }
-            pBody = mesh.meshPanel(meshOpts)[0]
-        } else if (bodyType == 'lattice') {
-            const latticeOpts = {
-                size: panelSize,
-                edgeMargin: panelThickness,
-                holeRadius: panelHoleRadius,
-                gapThickness: panelThickness,
-                holePattern: 'tri',
-            }
-            pBody = mesh.meshLatticePanel(latticeOpts)[0]
-        } else if (bodyType == 'minimal') {
-            const rectPanelOpts = {
-                size: [
-                    panelSize[0],
-                    panelSize[1],
-                    panelThickness,
-                ],
-                reinforcementPattern: 'full',
-                reinforcementThickness: [panelThickness, panelThickness, panelThickness]
-            }
-            pBody = reinforcements.reinforcedRectPanel(rectPanelOpts)[0]
-        } else {
-            // defaults to 'solid' bodyType
-            pBody = cuboid({
-                size: [
-                    panelSize[0],
-                    panelSize[1],
-                    panelThickness,
-                ]
-            })
-        }
-
-        return pBody
-    }
-
     const basicPost = (opts) => {
         const {
             length,
@@ -375,12 +322,13 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
         //----------------------------------------
         // Initializing sub-components
 
-        const pBody = panelBody({
-            panelSize,
-            panelThickness,
-            postThickness,
-            bodyType,
-        })
+        const polyPanelOpts = {
+            size: panelSize,
+            thickness: panelThickness,
+            type: bodyType,
+        }
+        const pBody = polyPanel(polyPanelOpts)[0]
+
         const pBeam = basicPost({
             length: panelLength,
             thickness: postThickness,
