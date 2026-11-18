@@ -1,0 +1,26 @@
+{
+  "name": "joists",
+  "version": "0.2.4",
+  "description": "joists",
+  "homepage": "",
+  "main": "index.js",
+  "scripts": {
+    "docs": "jsdoc src -r -d docs -c jsdoc.json --readme readme.md",
+    "test": "npx gulp"
+  },
+  "contributors": [
+    {
+      "name": "R. J. Salvador",
+      "url": "http://rj-salvador.com"
+    }
+  ],
+  "keywords": [
+    "openjscad",
+    "jscad"
+  ],
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "jsdoc": "^4.0.4"
+  }
+}
