@@ -14,8 +14,8 @@ const {
     isDirectory,
     mouldCfgName,
     mouldSubjectName,
-    baseIndexPathOnePart,
-    baseIndexPathTwoPart,
+    scriptPathOnePartMould,
+    scriptPathTwoPartMould,
     clearInternalDir
 } = mouldUtils
 
@@ -106,10 +106,10 @@ if (detectedProject) {
         fs.copyFileSync(modelPath, modelDestPath)
 
         if (mouldType == 'twoPart') {
-            fs.copyFileSync(baseIndexPathTwoPart, baseIndexDestPath)
+            fs.copyFileSync(scriptPathTwoPartMould, baseIndexDestPath)
         } else {
             // default to one-part moulds
-            fs.copyFileSync(baseIndexPathOnePart, baseIndexDestPath)
+            fs.copyFileSync(scriptPathOnePartMould, baseIndexDestPath)
         }
     } catch (err) {
         console.error(err);

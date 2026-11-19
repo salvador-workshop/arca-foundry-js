@@ -160,7 +160,7 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         const panelWidth = panelSize[1]
 
         const grooveWidth = postThickness + fitGap
-        const grooveHeight = postThickness * 0.6667
+        const grooveHeight = postThickness * 0.3333
         const grooveWallHeight = grooveHeight + thickness
 
         /* ----------------------------------------

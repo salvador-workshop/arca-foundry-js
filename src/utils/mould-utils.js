@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 export const utilsDir = dirname(fileURLToPath(import.meta.url));
 
 export const srcDir = join(utilsDir, '..')
+export const assemblyScriptDir = join(srcDir, 'assembly-scripts')
 export const rootDir = join(srcDir, '..')
 export const inputDir = join(srcDir, '../input')
 export const outputDir = join(srcDir, '../output')
@@ -13,11 +14,11 @@ export const internalWorkspaceDir = join(internalDir, 'workspace')
 
 export const mouldCfgName = 'config.json'
 export const mouldSubjectName = 'model.stl'
-export const baseIndexNameOnePart = 'base-index-one-part.js'
-export const baseIndexNameTwoPart = 'base-index-two-part.js'
+export const scriptNameOnePartMould = 'mould-one-part.js'
+export const scriptNameTwoPartMould = 'mould-two-part.js'
 
-export const baseIndexPathOnePart = join(srcDir, baseIndexNameOnePart)
-export const baseIndexPathTwoPart = join(srcDir, baseIndexNameTwoPart)
+export const scriptPathOnePartMould = join(assemblyScriptDir, scriptNameOnePartMould)
+export const scriptPathTwoPartMould = join(assemblyScriptDir, scriptNameTwoPartMould)
 
 export const isDirectory = fileName => {
     return fs.lstatSync(fileName).isDirectory();

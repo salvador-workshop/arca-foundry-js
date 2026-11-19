@@ -21,8 +21,8 @@ import {
     isDirectory,
     mouldCfgName,
     mouldSubjectName,
-    baseIndexPathOnePart,
-    baseIndexPathTwoPart,
+    scriptPathOnePartMould,
+    scriptPathTwoPartMould,
     clearInternalDir
 } from './mould-utils.js'
 
@@ -114,8 +114,8 @@ export const mouldUtils = {
     isDirectory,
     mouldCfgName,
     mouldSubjectName,
-    baseIndexPathOnePart,
-    baseIndexPathTwoPart,
+    scriptPathOnePartMould,
+    scriptPathTwoPartMould,
     clearInternalDir,
 };
 
