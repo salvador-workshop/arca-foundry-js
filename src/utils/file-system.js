@@ -7,6 +7,10 @@ import {
 } from 'node:fs';
 import { join } from 'path';
 
+import {
+    utils
+} from './index.js'
+
 
 //----------------------------------------
 // File System Operations
@@ -56,7 +60,7 @@ export const removeAllFilesSync = directory => {
  * Removes all files in "internal" directory
  */
 export const clearInternalDir = () => {
-    removeAllFilesSync(internalDir)
+    removeAllFilesSync(utils.directories.internalDir)
 }
 
 /**

@@ -1,6 +1,6 @@
 "use strict"
 
-const dowelHolderLineModule = require('.dowel-holder-line.js')
+const dowelHolderLineModule = require('./dowel-holder-line.js')
 
 const dowelFramePanelInit = ({ jscad, swcadJs }) => {
 
@@ -72,7 +72,7 @@ const dowelFramePanelInit = ({ jscad, swcadJs }) => {
                 dowelHolderTypes: ['single', 'inverse', 'double']
             },
             opts: {
-                type: standards.types.TYPE_DEFAULT,
+                type: { id: 'default', desc: 'Default model' },
                 dowelHolderType: 'double',
                 scale: 1,
                 reinforcementLevel: 1,
@@ -88,8 +88,8 @@ const dowelFramePanelInit = ({ jscad, swcadJs }) => {
                 fitGap: standards.FIT_GAP,
             },
             types: {
-                default: standards.types.TYPE_DEFAULT,
-                alt: standards.types.TYPE_ALT,
+                default: { id: 'default', desc: 'Default model' },
+                alt: { id: 'alt', desc: 'Alternate model' },
             },
         }
 

@@ -60,7 +60,7 @@ const dowelJoistPanelInit = ({ jscad, swcadJs }) => {
                 reinforcementLevel: 1,
                 dovetailOpt: 'none',
                 dowelHolderType: 'double',
-                type: standards.types.TYPE_DEFAULT,
+                type: { id: 'default', desc: 'Default model' },
                 scale: 1,
             },
             dims: {
@@ -73,8 +73,8 @@ const dowelJoistPanelInit = ({ jscad, swcadJs }) => {
                 fitGap: standards.FIT_GAP,
             },
             types: {
-                default: standards.types.TYPE_DEFAULT,
-                alt: standards.types.TYPE_ALT,
+                default: { id: 'default', desc: 'Default model' },
+                alt: { id: 'alt', desc: 'Alternate model' },
             },
         }
 

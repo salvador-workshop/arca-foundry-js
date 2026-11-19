@@ -42,13 +42,6 @@ const getParameterDefinitions = () => {
 // ----------------------------------------
 
 
-const castingSubject = require('./model.stl')
-const castMouldData1 = castingMould.flatOnePartMould({
-    subject: castingSubject,
-})
-const castMould = castMouldData1[0]
-
-
 /**
  * Main function to be rendered by JSCAD
  * @returns `geom3` or `geom3[]`

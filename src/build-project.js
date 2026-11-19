@@ -37,7 +37,7 @@ let projId = null
 if (!inputProject) {
     errMsg = '> No project specified.'
     console.error(errMsg)
-    return
+    process.exit()
 } else {
     projId = inputProject
 }
@@ -59,7 +59,7 @@ if (directoryList.includes(projId)) {
     projInputDir = join(inputDir, projId)
 } else {
     console.log(`> Project "${projId}" not found.`)
-    return
+    process.exit()
 }
 
 console.log(`> Found project "${projId}". Setting up build...`)
@@ -126,5 +126,3 @@ if (detectedProject) {
     errMsg = '> Project not found!'
     console.error(errMsg)
 }
-
-console.log('\n----------------------------------------------------------------\n')

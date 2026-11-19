@@ -34,7 +34,7 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
                 reinforcementLevel: 1,
                 dowelHolderType: 'double',
                 numSegments: 2,
-                type: standards.types.TYPE_DEFAULT,
+                type: { id: 'default', desc: 'Default model' },
                 scale: 1,
             },
             dims: {
@@ -50,8 +50,8 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
                 centrePt: [0, 0, 0]
             },
             types: {
-                default: standards.types.TYPE_DEFAULT,
-                alt: standards.types.TYPE_ALT,
+                default: { id: 'default', desc: 'Default model' },
+                alt: { id: 'alt', desc: 'Alternate model' },
             },
         }
 

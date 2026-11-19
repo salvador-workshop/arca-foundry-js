@@ -70,7 +70,7 @@ const dowelHolderLineInit = ({ jscad, swcadJs }) => {
             opts: {
                 dowelHolderType: 'double',
                 flip: false,
-                type: standards.types.TYPE_DEFAULT,
+                type: { id: 'default', desc: 'Default model' },
                 scale: 1,
             },
             dims: {
