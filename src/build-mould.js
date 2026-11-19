@@ -10,7 +10,6 @@ import {
 } from './utils/index.js'
 
 import {
-    mouldCfgName,
     mouldSubjectName,
     scriptPathOnePartMould,
     scriptPathTwoPartMould,
@@ -21,6 +20,7 @@ const {
     outputDir,
     internalDir,
     internalWorkspaceDir,
+    projectConfigName,
 } = utils
 
 const pEnv = process.env
@@ -61,7 +61,7 @@ console.log(`> Found project: ${projId}`)
 
 if (detectedProject) {
     // read project data
-    const cfgPath = join(projInputDir, mouldCfgName)
+    const cfgPath = join(projInputDir, projectConfigName)
     const modelPath = join(projInputDir, mouldSubjectName)
     const rawCfgData = fs.readFileSync(cfgPath);
     const cfgData = JSON.parse(rawCfgData)
@@ -84,7 +84,7 @@ if (detectedProject) {
 
     // copy data into internal dir
     try {
-        const cfgDestPath = join(projInternalDir, mouldCfgName)
+        const cfgDestPath = join(projInternalDir, projectConfigName)
         const modelDestPath = join(projInternalDir, mouldSubjectName)
         const baseIndexDestPath = join(projInternalDir, 'index.js')
 

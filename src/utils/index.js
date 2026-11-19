@@ -1,20 +1,16 @@
-import { exec } from "child_process";
-import {
-    readFileSync,
-    lstatSync,
-    readdirSync,
-    existsSync,
-    mkdirSync,
-    rmSync,
-} from 'node:fs';
-import { dirname, join, relative } from 'path';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+
+
+//----------------------------------------
+// Directories
+//----------------------------------------
+
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const utilsDir = __dirname
 const rootDir = join(__dirname, '../..')
 
-const configPath = join(rootDir, 'arca.config.json')
 const inputDir = join(rootDir, 'input')
 const outputDir = join(rootDir, 'output')
 
@@ -24,7 +20,59 @@ const assemblyScriptDir = join(srcDir, 'assembly-scripts')
 const internalDir = join(rootDir, 'internal')
 const internalWorkspaceDir = join(internalDir, 'workspace')
 
-const arcaConfigJsonContent = readFileSync(configPath);
+const directories = {
+    utilsDir,
+    rootDir,
+    inputDir,
+    outputDir,
+    srcDir,
+    assemblyScriptDir,
+    internalDir,
+    internalWorkspaceDir,
+}
+
+
+//----------------------------------------
+// Project Types
+//----------------------------------------
+
+
+const projectTypes = {
+    basicBox: { id: 'basic-box', description: '' },
+    mouldOnePart: { id: 'mould-one-part', description: '' },
+    mouldTwoPart: { id: 'mould-two-part', description: '' },
+}
+
+
+//----------------------------------------
+// Standard Paths and Filenames
+//----------------------------------------
+
+
+const projectScriptNames = {}
+const projectScriptPaths = {}
+for (const projType in projectTypes) {
+    const currentProjScriptName = `${projectTypes[projType].id}.js`
+    projectScriptNames[projType] = currentProjScriptName
+    projectScriptPaths[projType] = join(assemblyScriptDir, currentProjScriptName)
+}
+
+const scriptPaths = {
+    basicBox: projectScriptPaths['basicBox'],
+    mouldOnePart: projectScriptPaths['mouldOnePart'],
+    mouldTwoPart: projectScriptPaths['mouldTwoPart'],
+}
+
+const filenames = {
+    mouldSubjectName: 'model.stl',
+    projectConfigName: 'config.json',
+}
+
+
+//----------------------------------------
+// Utility Functions
+//----------------------------------------
+
 
 const unpackDate = (inputDate) => {
     const [month, day, year, hour, minutes, seconds, milliseconds] = [
@@ -80,84 +128,23 @@ const formatParamsToCmdString = (modelParameters) => {
     return paramStrs.join(' ')
 }
 
-export const utils = {
-    utilsDir,
-    rootDir,
-    configPath,
-    inputDir,
-    outputDir,
-    srcDir,
-    assemblyScriptDir,
-    internalDir,
-    internalWorkspaceDir,
+const functions = {
     unpackDate,
     dateTagDay,
     dateTagTime,
     formatParamsToCmdString,
 }
 
-export const arcaConfig = JSON.parse(arcaConfigJsonContent);
 
-console.log(arcaConfigJsonContent);
-console.log(arcaConfig);
-console.log(typeof arcaConfig);
+//----------------------------------------
+// Various Exports
+//----------------------------------------
 
-/**
- * Checks if a given path is a directory or not
- * @param {string} path 
- * @returns 
- */
-export const isDirectory = path => {
-    return lstatSync(path).isDirectory();
-};
 
-/**
- * Removes all files in a given directory
- * @param {string} directory 
- */
-export const removeAllFilesSync = directory => {
-    if (!existsSync(directory)) {
-        // just quit if the directory doesn't exist
-        return 0
-    }
-
-    try {
-        const files = readdirSync(directory);
-
-        for (const file of files) {
-            const filePath = join(directory, file);
-            // const stats = fs.statSync(filePath);
-            // console.log(stats.mode)
-            // fs.chmod(filePath, 0o200, (err) => {
-            //     if (err) throw err;
-            //     console.log(`The permissions for file "${filePath}" have been changed.`);
-            // });
-            // fs.chmodSync(filePath, 0o766)
-            // fs.unlinkSync(filePath);
-            rmSync(filePath, { recursive: true, force: true });
-        }
-    } catch (err) {
-        console.error(err);
-    }
-}
-
-/**
- * Removes all files in "internal" directory
- */
-export const clearInternalDir = () => {
-    removeAllFilesSync(internalDir)
-}
-
-/**
- * Creates a directory if it doesn't exist
- * @param {string} directory 
- */
-export const createDir = directory => {
-    try {
-        if (!existsSync(directory)) {
-            mkdirSync(directory);
-        }
-    } catch (err) {
-        console.error(err);
-    }
+export const utils = {
+    directories,
+    projectTypes,
+    scriptPaths,
+    filenames,
+    functions,
 }

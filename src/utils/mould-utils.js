@@ -4,7 +4,6 @@ import {
     utils
 } from './index.js'
 
-export const mouldCfgName = 'config.json'
 export const mouldSubjectName = 'model.stl'
 export const scriptNameOnePartMould = 'mould-one-part.js'
 export const scriptNameTwoPartMould = 'mould-two-part.js'

@@ -54,6 +54,7 @@ const castMould = castMouldData1[0]
  * @returns `geom3` or `geom3[]`
  */
 function main(params) {
+    console.log('[BASIC BOX] input parameters', params)
     const {
         length,
         width,
