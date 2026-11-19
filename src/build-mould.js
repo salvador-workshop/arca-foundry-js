@@ -3,21 +3,25 @@ import fs from 'node:fs';
 import { join, relative } from 'path';
 
 import {
-    mouldUtils
+    utils,
+    isDirectory,
+    clearInternalDir,
+    createDir,
 } from './utils/index.js'
+
+import {
+    mouldCfgName,
+    mouldSubjectName,
+    scriptPathOnePartMould,
+    scriptPathTwoPartMould,
+} from './utils/mould-utils.js'
 
 const {
     inputDir,
     outputDir,
     internalDir,
     internalWorkspaceDir,
-    isDirectory,
-    mouldCfgName,
-    mouldSubjectName,
-    scriptPathOnePartMould,
-    scriptPathTwoPartMould,
-    clearInternalDir
-} = mouldUtils
+} = utils
 
 const pEnv = process.env
 const inputProject = pEnv.npm_config_project ? pEnv.npm_config_project : ""
@@ -68,33 +72,15 @@ if (detectedProject) {
 
     // set up output directory
     const projOutputDir = join(outputDir, projId)
-    try {
-        if (!fs.existsSync(projOutputDir)) {
-            fs.mkdirSync(projOutputDir);
-        }
-    } catch (err) {
-        console.error(err);
-    }
+    createDir(projOutputDir)
 
     // set up internal directory
-    try {
-        if (!fs.existsSync(internalDir)) {
-            fs.mkdirSync(internalDir);
-        }
-    } catch (err) {
-        console.error(err);
-    }
+    createDir(internalDir)
 
     // set up internal workspace directory
     const projInternalDir = internalWorkspaceDir
-    try {
-        clearInternalDir()
-        if (!fs.existsSync(projInternalDir)) {
-            fs.mkdirSync(projInternalDir);
-        }
-    } catch (err) {
-        console.error(err);
-    }
+    clearInternalDir()
+    createDir(projInternalDir)
 
     // copy data into internal dir
     try {

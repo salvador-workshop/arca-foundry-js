@@ -5,35 +5,24 @@ import {
     readdirSync,
     existsSync,
     mkdirSync,
+    rmSync,
 } from 'node:fs';
 import { dirname, join, relative } from 'path';
 import { fileURLToPath } from 'url';
-
-import {
-    draftUtils as draftUtilsModule
-} from './draft-utils.js'
-
-import {
-    // inputDir,
-    // outputDir,
-    internalDir,
-    internalWorkspaceDir,
-    isDirectory,
-    mouldCfgName,
-    mouldSubjectName,
-    scriptPathOnePartMould,
-    scriptPathTwoPartMould,
-    clearInternalDir
-} from './mould-utils.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const utilsDir = __dirname
 const rootDir = join(__dirname, '../..')
 
-const srcDir = join(rootDir, './arca.config.json')
-const configPath = join(rootDir, './arca.config.json')
-const inputDir = join(rootDir, './input')
-const outputDir = join(rootDir, './output')
+const configPath = join(rootDir, 'arca.config.json')
+const inputDir = join(rootDir, 'input')
+const outputDir = join(rootDir, 'output')
+
+const srcDir = join(rootDir, 'src')
+const assemblyScriptDir = join(srcDir, 'assembly-scripts')
+
+const internalDir = join(rootDir, 'internal')
+const internalWorkspaceDir = join(internalDir, 'workspace')
 
 const arcaConfigJsonContent = readFileSync(configPath);
 
@@ -92,35 +81,83 @@ const formatParamsToCmdString = (modelParameters) => {
 }
 
 export const utils = {
+    utilsDir,
     rootDir,
-    srcDir,
     configPath,
     inputDir,
     outputDir,
-    utilsDir,
+    srcDir,
+    assemblyScriptDir,
+    internalDir,
+    internalWorkspaceDir,
     unpackDate,
     dateTagDay,
     dateTagTime,
     formatParamsToCmdString,
 }
 
-export const draftUtils = draftUtilsModule;
-
-export const mouldUtils = {
-    inputDir,
-    outputDir,
-    internalDir,
-    internalWorkspaceDir,
-    isDirectory,
-    mouldCfgName,
-    mouldSubjectName,
-    scriptPathOnePartMould,
-    scriptPathTwoPartMould,
-    clearInternalDir,
-};
-
 export const arcaConfig = JSON.parse(arcaConfigJsonContent);
 
 console.log(arcaConfigJsonContent);
 console.log(arcaConfig);
 console.log(typeof arcaConfig);
+
+/**
+ * Checks if a given path is a directory or not
+ * @param {string} path 
+ * @returns 
+ */
+export const isDirectory = path => {
+    return lstatSync(path).isDirectory();
+};
+
+/**
+ * Removes all files in a given directory
+ * @param {string} directory 
+ */
+export const removeAllFilesSync = directory => {
+    if (!existsSync(directory)) {
+        // just quit if the directory doesn't exist
+        return 0
+    }
+
+    try {
+        const files = readdirSync(directory);
+
+        for (const file of files) {
+            const filePath = join(directory, file);
+            // const stats = fs.statSync(filePath);
+            // console.log(stats.mode)
+            // fs.chmod(filePath, 0o200, (err) => {
+            //     if (err) throw err;
+            //     console.log(`The permissions for file "${filePath}" have been changed.`);
+            // });
+            // fs.chmodSync(filePath, 0o766)
+            // fs.unlinkSync(filePath);
+            rmSync(filePath, { recursive: true, force: true });
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+/**
+ * Removes all files in "internal" directory
+ */
+export const clearInternalDir = () => {
+    removeAllFilesSync(internalDir)
+}
+
+/**
+ * Creates a directory if it doesn't exist
+ * @param {string} directory 
+ */
+export const createDir = directory => {
+    try {
+        if (!existsSync(directory)) {
+            mkdirSync(directory);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
