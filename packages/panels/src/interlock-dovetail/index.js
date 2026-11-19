@@ -300,6 +300,7 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
             thickness: postThickness,
             dovetailLength,
             type: sidePostType,
+            fitGap,
         }
         const pPost = dovetailPost(sidePostOpts)
 
