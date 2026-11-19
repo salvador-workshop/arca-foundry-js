@@ -124,7 +124,6 @@ const pegboardInit = ({ jscad, swcadJs }) => {
      */
     const pegboardOpts = (opts) => {
         const defaults = pegboardDefaults()
-        console.log('pegboardOpts() -- opts', opts)
 
         // User options
         const {
@@ -157,7 +156,6 @@ const pegboardInit = ({ jscad, swcadJs }) => {
             ...stdOpts,
         }
 
-        console.log('pegboardOpts() -- initOpts', initOpts)
 
         return initOpts
     }
@@ -175,7 +173,6 @@ const pegboardInit = ({ jscad, swcadJs }) => {
      */
     const pegboardProps = (opts) => {
         const defaults = pegboardDefaults()
-        console.log('pegboardProps() -- opts', opts)
 
         const {
             size,
@@ -279,7 +276,6 @@ const pegboardInit = ({ jscad, swcadJs }) => {
             components: modelComponents,
         }
 
-        console.log('pegboardProps() -- modelProperties', modelProperties)
 
         return modelProperties
     }

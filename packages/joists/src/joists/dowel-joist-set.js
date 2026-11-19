@@ -95,7 +95,6 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
      */
     const dowelJoistSetOpts = (opts) => {
         const defaults = dowelJoistSetDefaults()
-        console.log('dowelJoistSetOpts() -- opts', opts)
 
         // User options
         const {
@@ -132,7 +131,6 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
             ...stdOpts,
         }
 
-        console.log('dowelJoistSetOpts() -- initOpts', initOpts)
 
         return initOpts
     }
@@ -149,7 +147,6 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
      */
     const dowelJoistSetProps = (opts) => {
         const defaults = dowelJoistSetDefaults()
-        console.log('dowelJoistSetProps() -- opts', opts)
 
         const {
             dowelRadius,
@@ -280,7 +277,6 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
             components: modelComponents,
         }
 
-        console.log('dowelJoistSetProps() -- modelProperties', modelProperties)
 
         return modelProperties
     }

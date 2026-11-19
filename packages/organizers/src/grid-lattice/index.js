@@ -122,7 +122,6 @@ const gridLatticeInit = ({ jscad, swcadJs }) => {
      */
     const gridLatticeOpts = (opts) => {
         const defaults = gridLatticeDefaults()
-        console.log('gridLatticeOpts() -- opts', opts)
 
         // User options
         const {
@@ -145,7 +144,6 @@ const gridLatticeInit = ({ jscad, swcadJs }) => {
             ...stdOpts,
         }
 
-        console.log('gridLatticeOpts() -- initOpts', initOpts)
 
         return initOpts
     }
@@ -162,7 +160,6 @@ const gridLatticeInit = ({ jscad, swcadJs }) => {
      */
     const gridLatticeProps = (opts) => {
         const defaults = gridLatticeDefaults()
-        console.log('gridLatticeProps() -- opts', opts)
 
         const {
             size,
@@ -235,7 +232,6 @@ const gridLatticeInit = ({ jscad, swcadJs }) => {
             components: modelComponents,
         }
 
-        console.log('gridLatticeProps() -- modelProperties', modelProperties)
 
         return modelProperties
     }

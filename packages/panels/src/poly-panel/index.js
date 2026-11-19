@@ -91,7 +91,6 @@ const polyPanelInit = ({ jscad, swcadJs }) => {
      */
     const polyPanelOpts = (opts) => {
         const defaults = polyPanelDefaults()
-        console.log('polyPanelOpts() -- opts', opts)
 
         // User options
         const {
@@ -114,7 +113,6 @@ const polyPanelInit = ({ jscad, swcadJs }) => {
             reinforcementPattern,
         }
 
-        console.log('polyPanelOpts() -- initOpts', initOpts)
 
         return initOpts
     }
@@ -132,7 +130,6 @@ const polyPanelInit = ({ jscad, swcadJs }) => {
      */
     const polyPanelProps = (opts) => {
         const defaults = polyPanelDefaults()
-        console.log('polyPanelProps() -- prop opts', opts)
 
         const {
             size,
@@ -201,7 +198,6 @@ const polyPanelInit = ({ jscad, swcadJs }) => {
             components: modelComponents,
         }
 
-        console.log('polyPanelProps() -- modelProperties', modelProperties)
 
         return modelProperties
     }

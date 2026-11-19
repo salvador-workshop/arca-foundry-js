@@ -104,7 +104,6 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
      */
     const interlockDovetailOpts = (opts) => {
         const defaults = interlockDovetailDefaults()
-        console.log('interlockDovetailOpts() -- opts', opts)
 
         // User options
         const {
@@ -129,7 +128,6 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
             fitGap,
         }
 
-        console.log('interlockDovetailOpts() -- initOpts', initOpts)
 
         return initOpts
     }
@@ -144,7 +142,6 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
      */
     const interlockDovetailProps = (opts) => {
         const defaults = interlockDovetailDefaults()
-        console.log('interlockDovetailProps() -- prop opts', opts)
 
         const {
             size,
@@ -215,7 +212,6 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
             components: modelComponents,
         }
 
-        console.log('interlockDovetailProps() -- modelProperties', modelProperties)
 
         return modelProperties
     }

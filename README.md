@@ -4,14 +4,6 @@ Salvador Workshop's 3D [Code-CAD](https://github.com/Irev-Dev/curated-code-cad) 
 
 ## Usage
 
-### `npm run jscad`
-
-If a JSCAD project exists at `src/input/example1/`, that can be built into an STL model by running:
-
-`npm run jscad --project="example1"`
-
-The output model would then be located at `output/example1/example1.stl`
-
 ### `npm run build-project`
 
 Project types are specified in the project's `config.json`:

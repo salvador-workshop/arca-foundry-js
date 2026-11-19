@@ -1,6 +1,6 @@
 {
   "name": "arca-foundry-js",
-  "version": "0.4.2-alpha.5",
+  "version": "0.4.2-alpha.6",
   "description": "Salvador Workshop's 3D components and designs, specified in Code-CAD",
   "workspaces": [
     "packages/*"
@@ -8,7 +8,6 @@
   "main": "src/index.js",
   "scripts": {
     "docs": "jsdoc packages -r -d docs -c jsdoc.json --readme readme.md",
-    "mould": "node src/build-mould.js",
     "build-project": "node src/build-project.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
