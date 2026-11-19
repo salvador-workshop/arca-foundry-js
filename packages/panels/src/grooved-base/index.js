@@ -93,7 +93,6 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
      */
     const groovedBaseOpts = (opts) => {
         const defaults = groovedBaseDefaults()
-        console.log('groovedBaseOpts() -- opts', opts)
 
         // User options
         const {
@@ -114,7 +113,6 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
             fitGap,
         }
 
-        console.log('groovedBaseOpts() -- initOpts', initOpts)
 
         return initOpts
     }
@@ -132,7 +130,6 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
      */
     const groovedBaseProps = (opts) => {
         const defaults = groovedBaseDefaults()
-        console.log('groovedBaseProps() -- prop opts', opts)
 
         const {
             footingSize,
@@ -160,7 +157,7 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         const panelWidth = panelSize[1]
 
         const grooveWidth = postThickness + fitGap
-        const grooveHeight = postThickness * 0.6667
+        const grooveHeight = postThickness * 0.3333
         const grooveWallHeight = grooveHeight + thickness
 
         /* ----------------------------------------
@@ -212,7 +209,6 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
             components: modelComponents,
         }
 
-        console.log('groovedBaseProps() -- modelProperties', modelProperties)
 
         return modelProperties
     }

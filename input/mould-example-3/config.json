@@ -1,8 +1,9 @@
 {
-    "parameters": {
-        "mouldType": "twoPart",
-        "projectName": "Demo: Two-part Moulds",
-        "projectId": "TPM",
+    "type": "mouldTwoPart",
+    "metadata": {
+        "name": "Demo: Two-part Moulds 02",
+        "id": "TPM",
         "serialNumber": "0002"
-    }
+    },
+    "parameters": {}
 }

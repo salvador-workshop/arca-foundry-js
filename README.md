@@ -4,18 +4,34 @@ Salvador Workshop's 3D [Code-CAD](https://github.com/Irev-Dev/curated-code-cad) 
 
 ## Usage
 
-### `npm run jscad`
+### `npm run build-project`
 
-If a JSCAD project exists at `src/input/example1/`, that can be built into an STL model by running:
+Project types are specified in the project's `config.json`:
 
-`npm run jscad --project="example1"`
+```json
+{
+    "type": "basicBox",
+    "metadata": {
+        // ...
+    },
+    "parameters": {
+        // ...
+    }
+}
+```
 
-The output model would then be located at `output/example1/example1.stl`
+#### Project type: `basicBox`
 
-### `npm run moulds`
+Build a simple box using:
+
+`npm run build-project -- "box-example-1"`
+
+...
+
+#### Project type: `mouldOnePart` or `mouldTwoPart`
 
 Build moulds around an STL model by running:
 
-`npm run mould --project="mould-example-1"`
+`npm run build-project -- "mould-example-1"`
 
 The mould object must be named `model.stl` and placed in the appropriate directory in `input/` (in the above case, `input/mould-example-1/`). That project's output would then be placed in `output/mould-example-1/`

@@ -1,6 +1,6 @@
 {
   "name": "organizers",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "ARCA organizers generator",
   "homepage": "",
   "main": "index.js",

@@ -1,41 +1,78 @@
-import { exec } from "child_process";
-import {
-    readFileSync,
-    lstatSync,
-    readdirSync,
-    existsSync,
-    mkdirSync,
-} from 'node:fs';
-import { dirname, join, relative } from 'path';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
-import {
-    draftUtils as draftUtilsModule
-} from './draft-utils.js'
 
-import {
-    // inputDir,
-    // outputDir,
-    internalDir,
-    internalWorkspaceDir,
-    isDirectory,
-    mouldCfgName,
-    mouldSubjectName,
-    baseIndexPathOnePart,
-    baseIndexPathTwoPart,
-    clearInternalDir
-} from './mould-utils.js'
+//----------------------------------------
+// Directories
+//----------------------------------------
+
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const utilsDir = __dirname
 const rootDir = join(__dirname, '../..')
 
-const srcDir = join(rootDir, './arca.config.json')
-const configPath = join(rootDir, './arca.config.json')
-const inputDir = join(rootDir, './input')
-const outputDir = join(rootDir, './output')
+const inputDir = join(rootDir, 'input')
+const outputDir = join(rootDir, 'output')
 
-const arcaConfigJsonContent = readFileSync(configPath);
+const srcDir = join(rootDir, 'src')
+const assemblyScriptDir = join(srcDir, 'assembly-scripts')
+
+const internalDir = join(rootDir, 'internal')
+const internalWorkspaceDir = join(internalDir, 'workspace')
+
+const directories = {
+    utilsDir,
+    rootDir,
+    inputDir,
+    outputDir,
+    srcDir,
+    assemblyScriptDir,
+    internalDir,
+    internalWorkspaceDir,
+}
+
+
+//----------------------------------------
+// Project Types
+//----------------------------------------
+
+
+const projectTypes = {
+    basicBox: { id: 'basic-box', description: '' },
+    mouldOnePart: { id: 'mould-one-part', description: '' },
+    mouldTwoPart: { id: 'mould-two-part', description: '' },
+}
+
+
+//----------------------------------------
+// Standard Paths and Filenames
+//----------------------------------------
+
+
+const projectScriptNames = {}
+const projectScriptPaths = {}
+for (const projType in projectTypes) {
+    const currentProjScriptName = `${projectTypes[projType].id}.js`
+    projectScriptNames[projType] = currentProjScriptName
+    projectScriptPaths[projType] = join(assemblyScriptDir, currentProjScriptName)
+}
+
+const scriptPaths = {
+    basicBox: projectScriptPaths['basicBox'],
+    mouldOnePart: projectScriptPaths['mouldOnePart'],
+    mouldTwoPart: projectScriptPaths['mouldTwoPart'],
+}
+
+const filenames = {
+    mouldSubjectName: 'model.stl',
+    projectConfigName: 'config.json',
+}
+
+
+//----------------------------------------
+// Utility Functions
+//----------------------------------------
+
 
 const unpackDate = (inputDate) => {
     const [month, day, year, hour, minutes, seconds, milliseconds] = [
@@ -91,36 +128,23 @@ const formatParamsToCmdString = (modelParameters) => {
     return paramStrs.join(' ')
 }
 
-export const utils = {
-    rootDir,
-    srcDir,
-    configPath,
-    inputDir,
-    outputDir,
-    utilsDir,
+const functions = {
     unpackDate,
     dateTagDay,
     dateTagTime,
     formatParamsToCmdString,
 }
 
-export const draftUtils = draftUtilsModule;
 
-export const mouldUtils = {
-    inputDir,
-    outputDir,
-    internalDir,
-    internalWorkspaceDir,
-    isDirectory,
-    mouldCfgName,
-    mouldSubjectName,
-    baseIndexPathOnePart,
-    baseIndexPathTwoPart,
-    clearInternalDir,
-};
+//----------------------------------------
+// Various Exports
+//----------------------------------------
 
-export const arcaConfig = JSON.parse(arcaConfigJsonContent);
 
-console.log(arcaConfigJsonContent);
-console.log(arcaConfig);
-console.log(typeof arcaConfig);
+export const utils = {
+    directories,
+    projectTypes,
+    scriptPaths,
+    filenames,
+    functions,
+}

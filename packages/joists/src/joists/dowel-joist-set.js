@@ -34,7 +34,7 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
                 reinforcementLevel: 1,
                 dowelHolderType: 'double',
                 numSegments: 2,
-                type: standards.types.TYPE_DEFAULT,
+                type: { id: 'default', desc: 'Default model' },
                 scale: 1,
             },
             dims: {
@@ -50,8 +50,8 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
                 centrePt: [0, 0, 0]
             },
             types: {
-                default: standards.types.TYPE_DEFAULT,
-                alt: standards.types.TYPE_ALT,
+                default: { id: 'default', desc: 'Default model' },
+                alt: { id: 'alt', desc: 'Alternate model' },
             },
         }
 
@@ -95,7 +95,6 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
      */
     const dowelJoistSetOpts = (opts) => {
         const defaults = dowelJoistSetDefaults()
-        console.log('dowelJoistSetOpts() -- opts', opts)
 
         // User options
         const {
@@ -132,7 +131,6 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
             ...stdOpts,
         }
 
-        console.log('dowelJoistSetOpts() -- initOpts', initOpts)
 
         return initOpts
     }
@@ -149,7 +147,6 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
      */
     const dowelJoistSetProps = (opts) => {
         const defaults = dowelJoistSetDefaults()
-        console.log('dowelJoistSetProps() -- opts', opts)
 
         const {
             dowelRadius,
@@ -280,7 +277,6 @@ const dowelJoistSetInit = ({ jscad, swcadJs }) => {
             components: modelComponents,
         }
 
-        console.log('dowelJoistSetProps() -- modelProperties', modelProperties)
 
         return modelProperties
     }

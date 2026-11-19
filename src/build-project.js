@@ -3,7 +3,13 @@ import fs from 'node:fs';
 import { join, relative } from 'path';
 
 import {
-    mouldUtils
+    isDirectory,
+    clearInternalDir,
+    createDir,
+} from './utils/file-system.js'
+
+import {
+    utils,
 } from './utils/index.js'
 
 const {
@@ -11,27 +17,26 @@ const {
     outputDir,
     internalDir,
     internalWorkspaceDir,
-    isDirectory,
-    mouldCfgName,
-    mouldSubjectName,
-    baseIndexPathOnePart,
-    baseIndexPathTwoPart,
-    clearInternalDir
-} = mouldUtils
+} = utils.directories
 
-const pEnv = process.env
-const inputProject = pEnv.npm_config_project ? pEnv.npm_config_project : ""
+const {
+    mouldSubjectName,
+    projectConfigName,
+} = utils.filenames
+
+const inputProject = process.argv[2]
 
 let detectedProject = false
 let errMsg = ''
 
 console.log('----------------------------------------------------------------\n')
-console.log('> Preparing to build mould from project in `src/input/`...')
+console.log('> Preparing to build project in `src/input/`...')
 
 let projId = null
 if (!inputProject) {
-    errMsg = '> No project specified!'
+    errMsg = '> No project specified.'
     console.error(errMsg)
+    process.exit()
 } else {
     projId = inputProject
 }
@@ -51,65 +56,55 @@ let projInputDir = null
 if (directoryList.includes(projId)) {
     detectedProject = true
     projInputDir = join(inputDir, projId)
+} else {
+    console.log(`> Project "${projId}" not found.`)
+    process.exit()
 }
 
-console.log(`> Found project: ${projId}`)
+console.log(`> Found project "${projId}". Setting up build...`)
 
 if (detectedProject) {
     // read project data
-    const cfgPath = join(projInputDir, mouldCfgName)
-    const modelPath = join(projInputDir, mouldSubjectName)
+    const cfgPath = join(projInputDir, projectConfigName)
     const rawCfgData = fs.readFileSync(cfgPath);
     const cfgData = JSON.parse(rawCfgData)
-    let mouldType = 'onePart'
-    if (cfgData && cfgData.parameters?.mouldType) {
-        mouldType = cfgData.parameters.mouldType
+
+    let projectType = 'basicBox'
+    if (cfgData && cfgData.type) {
+        projectType = cfgData.type
     }
 
     // set up output directory
     const projOutputDir = join(outputDir, projId)
-    try {
-        if (!fs.existsSync(projOutputDir)) {
-            fs.mkdirSync(projOutputDir);
-        }
-    } catch (err) {
-        console.error(err);
-    }
+    createDir(projOutputDir)
 
     // set up internal directory
-    try {
-        if (!fs.existsSync(internalDir)) {
-            fs.mkdirSync(internalDir);
-        }
-    } catch (err) {
-        console.error(err);
-    }
+    createDir(internalDir)
 
     // set up internal workspace directory
     const projInternalDir = internalWorkspaceDir
-    try {
-        clearInternalDir()
-        if (!fs.existsSync(projInternalDir)) {
-            fs.mkdirSync(projInternalDir);
-        }
-    } catch (err) {
-        console.error(err);
-    }
+    clearInternalDir()
+    createDir(projInternalDir)
 
     // copy data into internal dir
     try {
-        const cfgDestPath = join(projInternalDir, mouldCfgName)
-        const modelDestPath = join(projInternalDir, mouldSubjectName)
-        const baseIndexDestPath = join(projInternalDir, 'index.js')
-
+        const cfgDestPath = join(projInternalDir, projectConfigName)
         fs.copyFileSync(cfgPath, cfgDestPath)
-        fs.copyFileSync(modelPath, modelDestPath)
 
-        if (mouldType == 'twoPart') {
-            fs.copyFileSync(baseIndexPathTwoPart, baseIndexDestPath)
+        const baseIndexDestPath = join(projInternalDir, 'index.js')
+        if (projectType == 'mouldTwoPart') {
+            const modelPath = join(projInputDir, mouldSubjectName)
+            const modelDestPath = join(projInternalDir, mouldSubjectName)
+            fs.copyFileSync(modelPath, modelDestPath)
+            fs.copyFileSync(utils.scriptPaths.mouldTwoPart, baseIndexDestPath)
+        } else if (projectType == 'mouldOnePart') {
+            const modelPath = join(projInputDir, mouldSubjectName)
+            const modelDestPath = join(projInternalDir, mouldSubjectName)
+            fs.copyFileSync(modelPath, modelDestPath)
+            fs.copyFileSync(utils.scriptPaths.mouldOnePart, baseIndexDestPath)
         } else {
-            // default to one-part moulds
-            fs.copyFileSync(baseIndexPathOnePart, baseIndexDestPath)
+            // default to "basic-box"
+            fs.copyFileSync(utils.scriptPaths.basicBox, baseIndexDestPath)
         }
     } catch (err) {
         console.error(err);
@@ -117,7 +112,7 @@ if (detectedProject) {
 
     // run JSCAD
     // const cmdString = `npx jscad src/input/${projId}/ -o output/${projId}/${projId}.stl`
-    const cmdString = `npx jscad ${internalWorkspaceDir}/ -gp -o output/${projId}/${projId}-mould.stl`
+    const cmdString = `npx jscad ${internalWorkspaceDir}/ -gp -o output/${projId}/${projId}.stl`
     exec(cmdString, (err, stdout, stderr) => {
         if (err) {
             console.error("Error:");
@@ -130,5 +125,3 @@ if (detectedProject) {
     errMsg = '> Project not found!'
     console.error(errMsg)
 }
-
-console.log('\n----------------------------------------------------------------\n')

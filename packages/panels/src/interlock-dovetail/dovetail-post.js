@@ -93,7 +93,6 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
      */
     const dovetailPostOpts = (opts) => {
         const defaults = dovetailPostDefaults()
-        console.log('dovetailPostOpts() -- opts', opts)
 
         // User options
         const {
@@ -112,7 +111,6 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
             fitGap,
         }
 
-        console.log('dovetailPostOpts() -- initOpts', initOpts)
 
         return initOpts
     }
@@ -127,7 +125,6 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
      */
     const dovetailPostProps = (opts) => {
         const defaults = dovetailPostDefaults()
-        console.log('dovetailPostProps() -- prop opts', opts)
 
         const {
             length,
@@ -177,7 +174,6 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
             components: modelComponents,
         }
 
-        console.log('dovetailPostProps() -- modelProperties', modelProperties)
 
         return modelProperties
     }
