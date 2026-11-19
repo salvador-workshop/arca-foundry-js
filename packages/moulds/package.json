@@ -1,6 +1,6 @@
 {
   "name": "moulds",
-  "version": "0.4.2-alpha.5",
+  "version": "0.4.2",
   "description": "ARCA mould generators",
   "homepage": "",
   "main": "src/index.js",

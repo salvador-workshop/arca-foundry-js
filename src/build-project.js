@@ -24,8 +24,7 @@ const {
     projectConfigName,
 } = utils.filenames
 
-const pEnv = process.env
-const inputProject = pEnv.npm_config_project ? pEnv.npm_config_project : ""
+const inputProject = process.argv[2]
 
 let detectedProject = false
 let errMsg = ''
@@ -113,7 +112,7 @@ if (detectedProject) {
 
     // run JSCAD
     // const cmdString = `npx jscad src/input/${projId}/ -o output/${projId}/${projId}.stl`
-    const cmdString = `npx jscad ${internalWorkspaceDir}/ -gp -o output/${projId}/${projId}-mould.stl`
+    const cmdString = `npx jscad ${internalWorkspaceDir}/ -gp -o output/${projId}/${projId}.stl`
     exec(cmdString, (err, stdout, stderr) => {
         if (err) {
             console.error("Error:");

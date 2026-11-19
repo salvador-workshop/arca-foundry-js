@@ -7,6 +7,9 @@ const {
     math,
 } = swcadJs.calcs
 
+const projectConfigContent = require('./config.json');
+const projectConfig = projectConfigContent[0]
+
 const panelsModule = require('panels')
 
 const {
@@ -24,7 +27,8 @@ const groovedBase = groovedBaseModule.init({ jscad, swcadJs })
 
 
 const getParameterDefinitions = () => {
-    return [
+    // Initialize parameters
+    const params = [
         { name: 'length', caption: '', type: 'float', initial: math.inchesToMm(5) },
         { name: 'width', caption: '', type: 'float', initial: math.inchesToMm(4) },
         { name: 'height', caption: '', type: 'float', initial: math.inchesToMm(3) },
@@ -34,6 +38,25 @@ const getParameterDefinitions = () => {
         { name: 'panelType', caption: '', type: 'text', initial: 'minimal' },
         { name: 'fitGap', caption: '', type: 'float', initial: math.inchesToMm(1 / 128) },
     ];
+
+    let configParams = {}
+    if (projectConfig && projectConfig.parameters) {
+        configParams = projectConfig.parameters
+    }
+    const configParamKeys = Object.keys(configParams)
+
+    // override parameters with values from "config.json"
+    const overridenParams = params.map(paramObj => {
+        const newParamObj = {
+            ...paramObj,
+        }
+        if (configParamKeys.includes(paramObj.name)) {
+            newParamObj.initial = configParams[paramObj.name]
+        }
+        return newParamObj
+    })
+
+    return overridenParams;
 }
 
 
@@ -71,7 +94,7 @@ function main(params) {
     const interDovetailPanelOpts = {
         panelThickness,
         postThickness,
-        dovetailLength: math.inchesToMm(1 / 2),
+        dovetailLength,
         bodyType: panelType,
         fitGap,
     }

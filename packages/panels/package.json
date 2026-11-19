@@ -1,6 +1,6 @@
 {
   "name": "panels",
-  "version": "0.4.2-alpha.6",
+  "version": "0.4.2",
   "description": "ARCA panels generator",
   "homepage": "",
   "main": "index.js",

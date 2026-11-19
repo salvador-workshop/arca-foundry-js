@@ -24,7 +24,7 @@ Project types are specified in the project's `config.json`:
 
 Build a simple box using:
 
-`npm run build-project --project="box-example-1"`
+`npm run build-project -- "box-example-1"`
 
 ...
 
@@ -32,6 +32,6 @@ Build a simple box using:
 
 Build moulds around an STL model by running:
 
-`npm run build-project --project="mould-example-1"`
+`npm run build-project -- "mould-example-1"`
 
 The mould object must be named `model.stl` and placed in the appropriate directory in `input/` (in the above case, `input/mould-example-1/`). That project's output would then be placed in `output/mould-example-1/`
