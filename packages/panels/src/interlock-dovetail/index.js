@@ -2,54 +2,19 @@
 
 const interlockDovetailInit = ({ jscad, swcadJs }) => {
     const {
-        cube,
-        cylinder,
-        sphere,
-        cylinderElliptic,
-        circle,
         cuboid,
-        roundedCuboid,
-        roundedCylinder,
-        roundedRectangle,
-        rectangle,
-        triangle,
     } = jscad.primitives
 
     const {
         align,
-        translate,
         rotate,
-        mirror
     } = jscad.transforms
 
     const {
-        intersect,
-        subtract,
         union,
-        scission
     } = jscad.booleans
 
-    const {
-        extrudeLinear,
-        extrudeRotate,
-        project
-    } = jscad.extrusions
-
-    const {
-        measureDimensions,
-        measureBoundingBox,
-        measureVolume
-    } = jscad.measurements
-
-    const {
-        hull,
-        hullChain
-    } = jscad.hulls
-
-    const { vectorText } = jscad.text
-    const { toOutlines } = jscad.geometries.geom2
     const { TAU } = jscad.maths.constants
-    const { colorize } = jscad.colors
 
     const {
         standards,
@@ -58,11 +23,6 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
     const {
         math,
     } = swcadJs.calcs
-
-    const {
-        mesh,
-        reinforcements,
-    } = swcadJs.components
 
     const dovetailPostModule = require('./dovetail-post.js')
     const dovetailPost = dovetailPostModule.init({ jscad, swcadJs })
