@@ -1,5 +1,10 @@
 "use strict"
 
+//-----------------------------------------------------------------------------
+// This file is primarily used for testing components in the JSCAD web viewer.
+// Exports for external usage are initialized in the package root's "index.js"
+//-----------------------------------------------------------------------------
+
 const jscad = require('@jscad/modeling')
 
 const {
