@@ -57,7 +57,11 @@ const polyPostInit = ({ jscad, swcadJs }) => {
 
     const {
         math,
+        position,
     } = swcadJs.calcs
+
+    const dovetailPostModule = require('./dovetail-post.js')
+    const dovetailPost = dovetailPostModule.init({ jscad, swcadJs })
 
 
     //------------------------------------------------------------
@@ -81,28 +85,30 @@ const polyPostInit = ({ jscad, swcadJs }) => {
                 interfaceThickness
             },
             opts: {
-                type: 'default',
+                type: 'basic',
+                dovetailOpts: {
+                    length: math.inchesToMm(1 / 2),
+                    type: 'male',
+                },
             },
             dims: {
-                size: [
-                    math.inchesToMm(2),
-                    math.inchesToMm(4),
-                    math.inchesToMm(1),
-                ],
+                length: math.inchesToMm(3.5),
+                thickness: 5,
                 fitGap,
             },
             points: {},
             components: {},
             types: {
-                default: { id: 'default', desc: 'Default model' },
-                alt: { id: 'alt', desc: 'Alternate model' },
+                basic: { id: 'basic', desc: 'Basic model' },
+                dovetail: { id: 'dovetail', desc: 'Dovetail model' },
             },
         }
 
         const defaultOpts = {
-            size: defaultValues.dims.size,
+            length: defaultValues.dims.length,
+            thickness: defaultValues.dims.thickness,
             type: defaultValues.opts.type,
-            interfaceThickness: defaultValues.constants.interfaceThickness,
+            dovetailOpts: defaultValues.opts.dovetailOpts,
             fitGap: defaultValues.dims.fitGap,
         }
 
@@ -126,16 +132,18 @@ const polyPostInit = ({ jscad, swcadJs }) => {
 
         // User options
         const {
-            size = defaults.opts.size,
+            length = defaults.opts.length,
+            thickness = defaults.opts.thickness,
             type = defaults.opts.type,
-            interfaceThickness = defaults.opts.interfaceThickness,
+            dovetailOpts = defaults.opts.dovetailOpts,
             fitGap = defaults.opts.fitGap,
         } = opts
 
         const initOpts = {
-            size,
+            length,
+            thickness,
             type,
-            interfaceThickness,
+            dovetailOpts,
             fitGap,
         }
 
@@ -157,18 +165,15 @@ const polyPostInit = ({ jscad, swcadJs }) => {
         console.log('polyPostProps() -- prop opts', opts)
 
         const {
-            size,
+            length,
+            thickness,
             type,
-            interfaceThickness,
+            dovetailOpts,
             fitGap,
         } = opts
 
         //----------------------------------------
         // Prop calculations
-
-        const width = size[0]
-        const depth = size[1]
-        const height = size[2]
 
         //----------------------------------------
         // Preparing Model Properties, Dimensions
@@ -179,15 +184,13 @@ const polyPostInit = ({ jscad, swcadJs }) => {
         /** Derived user options for the model */
         const modelOpts = {
             type,
+            dovetailOpts,
         }
 
         /** Various dimensions for model */
         const modelDims = {
-            size,
-            width,
-            depth,
-            height,
-            interfaceThickness,
+            length,
+            thickness,
             fitGap,
         }
 
@@ -224,38 +227,20 @@ const polyPostInit = ({ jscad, swcadJs }) => {
     //------------------------------------------------------------
 
 
-    const subcomponent1 = (opts) => {
-        const {
-            size,
-            width,
-            depth,
-        } = opts
-
-        return sphere()
-    }
-
-    const subcomponent2 = (opts) => {
-        const {
-            size,
-            width,
-            depth,
-        } = opts
-
-        return cube()
-    }
-
-
     //------------------------------------------------------------
     // Primary Modelling Functions
     //------------------------------------------------------------
 
 
     /**
-     * Generates a new model
+     * Generates a post with square cross-section
      * @param {Object} opts - Options for the model
-     * @param {number[]} opts.size
-     * @param {string} opts.type
-     * @param {number} opts.reinforcementThickness
+     * @param {number} opts.length - post length
+     * @param {number} opts.thickness - post thickness
+     * @param {string} opts.type - one of ['basic', 'dovetail']
+     * @param {object} opts.dovetailOpts - options for 'dovetail' type
+     * @param {number} opts.dovetailOpts.length - dovetail length
+     * @param {string} opts.dovetailOpts.type - 'male' or 'female'
      * @param {number} opts.fitGap
      * @returns {Array.<(geom3|Object.<string, geom3>|Object.<string, any>)>} Array with model, parts, and properties
      * @memberof newModelParent
@@ -267,43 +252,47 @@ const polyPostInit = ({ jscad, swcadJs }) => {
 
         const {
             type,
+            dovetailOpts,
         } = modelProperties.opts
 
         const {
-            size,
-            width,
-            depth,
-            height,
-            interfaceThickness,
+            length,
+            thickness,
             fitGap,
         } = modelProperties.dims
 
         //----------------------------------------
         // Initializing sub-components
 
-        let subComp1 = subcomponent1({
-            size,
-            width,
-            depth,
-        })
+        let pPost = null
 
-        let subComp2 = subcomponent2({
-            size,
-            width,
-            depth,
-        })
+        if (type == 'dovetail') {
+            const dovetailPostOpts = {
+                length,
+                thickness,
+                dovetailLength: dovetailOpts.length,
+                type: dovetailOpts.type,
+                fitGap,
+            }
+            pPost = dovetailPost(dovetailPostOpts)
+        } else {
+            // default to 'basic'
+            pPost = cuboid({
+                size: [
+                    length,
+                    thickness,
+                    thickness,
+                ]
+            })
+        }
 
         //----------------------------------------
         // Assembling sub-components
 
-        const mainModel = union(
-            subComp1,
-            subComp2,
-        )
+        const mainModel = position.ctr(pPost)
 
         const modelParts = {
-            subcomponent1: subComp1,
-            subcomponent2: subComp2,
+            mainModel
         }
 
         return [mainModel, modelParts, modelProperties]

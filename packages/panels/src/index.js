@@ -64,11 +64,14 @@ const {
     position,
 } = swcadJs.calcs
 
-const dovetailPostModule = require('./interlock-dovetail/dovetail-post.js')
-const dovetailPost = dovetailPostModule.init({ jscad, swcadJs })
+// const dovetailPostModule = require('./interlock-dovetail/dovetail-post.js')
+// const dovetailPost = dovetailPostModule.init({ jscad, swcadJs })
 
-const interlockDovetailModule = require('./interlock-dovetail/index.js')
-const interlockDovetail = interlockDovetailModule.init({ jscad, swcadJs })
+// const interlockDovetailModule = require('./interlock-dovetail/index.js')
+// const interlockDovetail = interlockDovetailModule.init({ jscad, swcadJs })
+
+const interlockDovetailFrameModule = require('./interlock-dovetail-frame/index.js')
+const interlockDovetailFrame = interlockDovetailFrameModule.init({ jscad, swcadJs })
 
 const groovedShelfModule = require('./grooved-shelf/index.js')
 const groovedShelf = groovedShelfModule.init({ jscad, swcadJs })
@@ -82,21 +85,21 @@ const spaceUnit = math.inchesToMm(4.5)
  * @returns `geom3` or `geom3[]`
  */
 function main() {
-    const dovetailPostOpts = {
-        length: math.inchesToMm(3),
-        thickness: 5,
-        dovetailLength: math.inchesToMm(0.5),
-    }
+    // const dovetailPostOpts = {
+    //     length: math.inchesToMm(3),
+    //     thickness: 5,
+    //     dovetailLength: math.inchesToMm(0.5),
+    // }
 
-    const dPost1 = dovetailPost({
-        ...dovetailPostOpts,
-        type: 'male'
-    })
+    // const dPost1 = dovetailPost({
+    //     ...dovetailPostOpts,
+    //     type: 'male'
+    // })
 
-    const dPost2 = dovetailPost({
-        ...dovetailPostOpts,
-        type: 'female'
-    })
+    // const dPost2 = dovetailPost({
+    //     ...dovetailPostOpts,
+    //     type: 'female'
+    // })
 
     // return [
     //     translate([0, 0, 0], dPost1),
@@ -104,31 +107,59 @@ function main() {
     // ]
 
 
-    const interlockDovetailOpts = {
+    // const interlockDovetailOpts = {
+    //     size: [math.inchesToMm(2.5), math.inchesToMm(3.5)],
+    //     panelThickness: 1.3333,
+    //     postThickness: 4,
+    //     dovetailLength: math.inchesToMm(1 / 2),
+    // }
+
+    // const interlockDovetailPanel1 = interlockDovetail({
+    //     ...interlockDovetailOpts,
+    //     bodyType: 'solid',
+    //     positionType: 'face',
+    // })[0]
+    // const interlockDovetailPanel2 = interlockDovetail({
+    //     ...interlockDovetailOpts,
+    //     bodyType: 'mesh',
+    //     positionType: 'side',
+    // })[0]
+    // const interlockDovetailPanel3 = interlockDovetail({
+    //     ...interlockDovetailOpts,
+    //     bodyType: 'minimal',
+    //     positionType: 'face',
+    // })[0]
+    // const interlockDovetailPanel4 = interlockDovetail({
+    //     ...interlockDovetailOpts,
+    //     bodyType: 'minimal',
+    //     positionType: 'side',
+    // })[0]
+
+    const interDovetailFrameOpts = {
         size: [math.inchesToMm(2.5), math.inchesToMm(3.5)],
         panelThickness: 1.3333,
         postThickness: 4,
         dovetailLength: math.inchesToMm(1 / 2),
     }
 
-    const interlockDovetailPanel1 = interlockDovetail({
-        ...interlockDovetailOpts,
-        bodyType: 'solid',
+    const interDovetailFrame1 = interlockDovetailFrame({
+        ...interDovetailFrameOpts,
+        beamLevels: [15, math.inchesToMm(3.5)],
         positionType: 'face',
     })[0]
-    const interlockDovetailPanel2 = interlockDovetail({
-        ...interlockDovetailOpts,
-        bodyType: 'mesh',
+
+    const interDovetailFrame2 = interlockDovetailFrame({
+        ...interDovetailFrameOpts,
         positionType: 'side',
     })[0]
-    const interlockDovetailPanel3 = interlockDovetail({
-        ...interlockDovetailOpts,
-        bodyType: 'minimal',
+
+    const interDovetailFrame3 = interlockDovetailFrame({
+        ...interDovetailFrameOpts,
         positionType: 'face',
     })[0]
-    const interlockDovetailPanel4 = interlockDovetail({
-        ...interlockDovetailOpts,
-        bodyType: 'minimal',
+
+    const interDovetailFrame4 = interlockDovetailFrame({
+        ...interDovetailFrameOpts,
         positionType: 'side',
     })[0]
 
@@ -165,12 +196,16 @@ function main() {
     })[0]
 
     const modelRow1 = [
-        dPost1,
-        dPost2,
-        interlockDovetailPanel1,
-        interlockDovetailPanel2,
-        interlockDovetailPanel3,
-        interlockDovetailPanel4,
+        // dPost1,
+        // dPost2,
+        // interlockDovetailPanel1,
+        // interlockDovetailPanel2,
+        // interlockDovetailPanel3,
+        // interlockDovetailPanel4,
+        interDovetailFrame1,
+        interDovetailFrame2,
+        interDovetailFrame3,
+        interDovetailFrame4,
     ]
 
     const modelRow2 = [
@@ -189,7 +224,7 @@ function main() {
     })
 
     return [
-        // ...outModels1,
+        ...outModels1,
         ...outModels2,
     ]
 

@@ -22,13 +22,17 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
 
     const {
         math,
+        position,
     } = swcadJs.calcs
 
-    const dovetailPostModule = require('./dovetail-post.js')
-    const dovetailPost = dovetailPostModule.init({ jscad, swcadJs })
+    // const dovetailPostModule = require('./dovetail-post.js')
+    // const dovetailPost = dovetailPostModule.init({ jscad, swcadJs })
 
-    const polyPanelModule = require('../poly-panel/index.js')
-    const polyPanel = polyPanelModule.init({ jscad, swcadJs })
+    // const polyPanelModule = require('../poly-panel/index.js')
+    // const polyPanel = polyPanelModule.init({ jscad, swcadJs })
+
+    const polyPostModule = require('../poly-post/index.js')
+    const polyPost = polyPostModule.init({ jscad, swcadJs })
 
 
     //------------------------------------------------------------
@@ -44,19 +48,15 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
      * @access private
      */
     const interlockDovetailFrameDefaults = () => {
-        const interfaceThickness = standards.INTERFACE_THICKNESS
+        // const interfaceThickness = standards.INTERFACE_THICKNESS
         const fitGap = standards.FIT_GAP
 
         const defaultValues = {
             constants: {
-                interfaceThickness,
-                fitGap,
-                bodyTypes: ['solid', 'mesh', 'lattice', 'minimal'],
                 positionTypes: ['face', 'side'],
             },
             opts: {
                 type: 'simple',
-                bodyType: 'solid',
                 positionType: 'face',
             },
             dims: {
@@ -64,7 +64,6 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
                     math.inchesToMm(3),
                     math.inchesToMm(4),
                 ],
-                panelThickness: interfaceThickness,
                 postThickness: 5,
                 dovetailLength: math.inchesToMm(1 / 2),
                 fitGap,
@@ -79,11 +78,9 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
 
         const defaultOpts = {
             size: defaultValues.dims.size,
-            panelThickness: defaultValues.dims.panelThickness,
             postThickness: defaultValues.dims.postThickness,
             dovetailLength: defaultValues.dims.dovetailLength,
             type: defaultValues.opts.type,
-            bodyType: defaultValues.opts.bodyType,
             positionType: defaultValues.opts.positionType,
             fitGap: defaultValues.dims.fitGap,
         }
@@ -108,22 +105,20 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
         // User options
         const {
             size = defaults.opts.size,
-            panelThickness = defaults.opts.panelThickness,
             postThickness = defaults.opts.postThickness,
+            beamLevels,
             dovetailLength = defaults.opts.dovetailLength,
             type = defaults.opts.type,
-            bodyType = defaults.opts.bodyType,
             positionType = defaults.opts.positionType,
             fitGap = defaults.opts.fitGap,
         } = opts
 
         const initOpts = {
             size,
-            panelThickness,
             postThickness,
+            beamLevels,
             dovetailLength,
             type,
-            bodyType,
             positionType,
             fitGap,
         }
@@ -145,11 +140,10 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
 
         const {
             size,
-            panelThickness,
             postThickness,
+            beamLevels,
             dovetailLength,
             type,
-            bodyType,
             positionType,
             fitGap,
         } = opts
@@ -159,6 +153,14 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
 
         const length = size[0]
         const width = size[1]
+
+        let derivedBeamLevels = beamLevels
+        if (!beamLevels) {
+            derivedBeamLevels = [
+                postThickness,
+                width,
+            ]
+        }
 
         const panelSize = [
             size[0] - (postThickness * 2),
@@ -176,15 +178,14 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
         /** Derived user options for the model */
         const modelOpts = {
             type,
-            bodyType,
             positionType,
         }
 
         /** Various dimensions for model */
         const modelDims = {
             size,
-            panelThickness,
             postThickness,
+            beamLevels: derivedBeamLevels,
             dovetailLength,
             fitGap,
             length,
@@ -222,16 +223,6 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
     //------------------------------------------------------------
 
 
-    const basicPost = (opts) => {
-        const {
-            length,
-            thickness,
-        } = opts
-
-        return cuboid({ size: [length, thickness, thickness] })
-    }
-
-
     //------------------------------------------------------------
     // Primary Modelling Functions
     //------------------------------------------------------------
@@ -241,11 +232,10 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
      * Generates a new model
      * @param {Object} opts - Options for the model
      * @param {number[]} opts.size - 2D coord (length, width)
-     * @param {number} opts.panelThickness
      * @param {number} opts.postThickness
+     * @param {number[]} opts.beamLevels - describes top points for beams
      * @param {number} opts.dovetailLength
      * @param {string} opts.type
-     * @param {string} opts.bodyType
      * @param {string} opts.positionType
      * @param {number} opts.fitGap
      * @returns {Array.<(geom3|Object.<string, geom3>|Object.<string, any>)>} Array with model, parts, and properties
@@ -257,14 +247,13 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
 
         const {
             type,
-            bodyType,
             positionType,
         } = modelProperties.opts
 
         const {
             size,
-            panelThickness,
             postThickness,
+            beamLevels,
             dovetailLength,
             fitGap,
             length,
@@ -277,64 +266,71 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
         //----------------------------------------
         // Initializing sub-components
 
-        const polyPanelOpts = {
-            size: panelSize,
-            thickness: panelThickness,
-            type: bodyType,
-        }
-        const pBody = polyPanel(polyPanelOpts)[0]
-
-        const pBeam = basicPost({
+        const pBeam = polyPost({
             length: panelLength,
             thickness: postThickness,
-        })
+            type: 'basic',
+        })[0]
 
         const sidePostType = positionType == 'face' ? 'male' : 'female'
         const sidePostOpts = {
             length: width,
             thickness: postThickness,
-            dovetailLength,
-            type: sidePostType,
+            type: 'dovetail',
+            dovetailOpts: {
+                length: dovetailLength,
+                type: sidePostType,
+            },
             fitGap,
         }
-        const pPost = dovetailPost(sidePostOpts)
+        const pPost = polyPost(sidePostOpts)[0]
 
         //----------------------------------------
         // Assembling sub-components
 
-        let panelAssembly = pBody
+        const rightPt = [length / 2 - postThickness, 0, 0]
+        const leftPt = [length / -2 + postThickness, 0, 0]
 
-        // join top post to body
-        panelAssembly = union(
-            align({ modes: ['center', 'max', 'min'] }, panelAssembly),
-            align({ modes: ['center', 'min', 'min'] }, pBeam),
-        )
-
-        // join bottom post to body
-        panelAssembly = union(
-            align({ modes: ['center', 'min', 'min'] }, panelAssembly),
-            align({ modes: ['center', 'max', 'min'] }, pBeam),
+        // join left side post to body
+        const leftPost = align(
+            {
+                modes: ['max', 'min', 'min'],
+                relativeTo: leftPt,
+            },
+            rotate([0, 0, TAU / 4], pPost)
         )
 
         // join right side post to body
-        const rightPost = rotate([0, 0, TAU / -4], pPost)
-        panelAssembly = union(
-            align({ modes: ['max', 'center', 'min'] }, panelAssembly),
-            align({ modes: ['min', 'center', 'min'] }, rightPost),
+        const rightPost = align(
+            {
+                modes: ['min', 'min', 'min'],
+                relativeTo: rightPt,
+            },
+            rotate([0, 0, TAU / -4], pPost)
         )
 
-        // join left side post to body
-        const leftPost = rotate([0, 0, TAU / 4], pPost)
+        let panelAssembly = leftPost
+
+        console.log(beamLevels)
+        const beams = beamLevels.map(beamTopLevel => {
+            return align({
+                modes: ['center', 'max', 'min'],
+                relativeTo: [0, beamTopLevel, 0],
+            }, pBeam)
+        })
+
         panelAssembly = union(
-            align({ modes: ['min', 'center', 'min'] }, panelAssembly),
-            align({ modes: ['max', 'center', 'min'] }, leftPost),
+            panelAssembly,
+            ...beams,
+            rightPost,
         )
 
-        const mainModel = panelAssembly
+        const mainModel = position.ctr(panelAssembly)
 
         const modelParts = {
-            subcomponent1: pBody,
-            subcomponent2: pBeam,
+            mainModel,
+            beam: pBeam,
+            post: pPost,
         }
 
         return [mainModel, modelParts, modelProperties]

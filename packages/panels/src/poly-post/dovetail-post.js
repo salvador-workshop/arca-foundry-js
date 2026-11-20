@@ -285,9 +285,9 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
     /**
      * Post with interlocking dovetails
      * @param {object} opts - Options
-     * @param {number} opts.length - 3D coord (length, width, height)
-     * @param {number} opts.thickness - 3D coord (length, width, height)
-     * @param {number} opts.dovetailLength - orientation axis. One of 'x', 'y', or 'z'
+     * @param {number} opts.length
+     * @param {number} opts.thickness
+     * @param {number} opts.dovetailLength
      * @param {string} opts.type - 'male' or 'female'
      * @param {number} opts.fitGap
      * @returns {geom3} JSCAD 3D geometry
