@@ -151,11 +151,15 @@ function main() {
 
     const gBase3 = groovedShelf({
         ...groovedBaseOpts,
+        panelType: 'lattice',
+        // type: 'flush',
         isOpen: true,
     })[0]
 
     const gBase4 = groovedShelf({
         ...groovedBaseOpts,
+        panelType: 'lattice',
+        type: 'flush',
         hasCutCorners: true,
         cornerSize: [4, 6]
     })[0]
