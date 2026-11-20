@@ -70,8 +70,8 @@ const dovetailPost = dovetailPostModule.init({ jscad, swcadJs })
 const interlockDovetailModule = require('./interlock-dovetail/index.js')
 const interlockDovetail = interlockDovetailModule.init({ jscad, swcadJs })
 
-const groovedBaseModule = require('./grooved-base/index.js')
-const groovedBase = groovedBaseModule.init({ jscad, swcadJs })
+const groovedShelfModule = require('./grooved-shelf/index.js')
+const groovedShelf = groovedShelfModule.init({ jscad, swcadJs })
 
 //------------------------------------------------------------------------------
 
@@ -139,33 +139,56 @@ function main() {
         panelType: 'minimal',
     }
 
-    const gBase1 = groovedBase({
+    const gBase1 = groovedShelf({
         ...groovedBaseOpts,
         type: 'wrap'
     })[0]
 
-    const gBase2 = groovedBase({
+    const gBase2 = groovedShelf({
         ...groovedBaseOpts,
         type: 'flush'
     })[0]
 
-    const models = [
+    const gBase3 = groovedShelf({
+        ...groovedBaseOpts,
+        isOpen: true,
+    })[0]
+
+    const gBase4 = groovedShelf({
+        ...groovedBaseOpts,
+        hasCutCorners: true,
+        cornerSize: [4, 6]
+    })[0]
+
+    const modelRow1 = [
         dPost1,
         dPost2,
         interlockDovetailPanel1,
         interlockDovetailPanel2,
         interlockDovetailPanel3,
         interlockDovetailPanel4,
-        gBase1,
-        gBase2,
     ]
 
-    const outModels = models.map((oModel, idx) => {
+    const modelRow2 = [
+        gBase1,
+        gBase2,
+        gBase3,
+        gBase4,
+    ]
+
+    const outModels1 = modelRow1.map((oModel, idx) => {
         return translate([idx * spaceUnit, 0, 0], oModel)
     })
 
-    return outModels
-    
+    const outModels2 = modelRow2.map((oModel, idx) => {
+        return translate([idx * spaceUnit, spaceUnit, 0], oModel)
+    })
+
+    return [
+        // ...outModels1,
+        ...outModels2,
+    ]
+
     // return gBase2
 }
 

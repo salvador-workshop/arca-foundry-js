@@ -1,6 +1,6 @@
 "use strict"
 
-const groovedBaseInit = ({ jscad, swcadJs }) => {
+const groovedShelfInit = ({ jscad, swcadJs }) => {
     const {
         cuboid,
     } = jscad.primitives
@@ -11,6 +11,7 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
 
     const {
         union,
+        subtract,
     } = jscad.booleans
 
     const {
@@ -26,7 +27,9 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
     const polyPanel = polyPanelModule.init({ jscad, swcadJs })
 
 
-    //==============================================================================
+    //------------------------------------------------------------
+    // Model Internal Functions
+    //------------------------------------------------------------
 
 
     /**
@@ -36,7 +39,7 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
      * @memberof newModelParent
      * @access private
      */
-    const groovedBaseDefaults = () => {
+    const groovedShelfDefaults = () => {
         const interfaceThickness = standards.INTERFACE_THICKNESS
         const fitGap = standards.FIT_GAP
 
@@ -47,15 +50,18 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
             opts: {
                 type: 'wrap',
                 panelType: 'solid',
+                isOpen: false,
+                hasCutCorners: false,
             },
             dims: {
-                footingSize: [
+                supportSize: [
                     math.inchesToMm(2),
                     math.inchesToMm(4),
                 ],
                 thickness: interfaceThickness,
                 postThickness: 5,
                 fitGap,
+                cornerSize: [5, 7.5],
             },
             points: {},
             components: {},
@@ -66,12 +72,15 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         }
 
         const defaultOpts = {
-            footingSize: defaultValues.dims.footingSize,
+            supportSize: defaultValues.dims.supportSize,
             thickness: defaultValues.dims.thickness,
             postThickness: defaultValues.dims.postThickness,
             type: defaultValues.opts.type,
             panelType: defaultValues.opts.panelType,
             fitGap: defaultValues.dims.fitGap,
+            isOpen: defaultValues.opts.isOpen,
+            hasCutCorners: defaultValues.opts.hasCutCorners,
+            cornerSize: defaultValues.dims.cornerSize,
         }
 
         return {
@@ -81,9 +90,6 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
     }
 
 
-    //------------------------------------------------------------------------------
-
-
     /**
      * Initializes options with user input
      * @param {*} opts 
@@ -91,34 +97,36 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
      * @memberof newModelParent
      * @access private
      */
-    const groovedBaseOpts = (opts) => {
-        const defaults = groovedBaseDefaults()
+    const groovedShelfOpts = (opts) => {
+        const defaults = groovedShelfDefaults()
 
         // User options
         const {
-            footingSize = defaults.opts.footingSize,
+            supportSize = defaults.opts.supportSize,
             thickness = defaults.opts.thickness,
             postThickness = defaults.opts.postThickness,
             type = defaults.opts.type,
             panelType = defaults.opts.panelType,
             fitGap = defaults.opts.fitGap,
+            isOpen = defaults.opts.isOpen,
+            hasCutCorners = defaults.opts.hasCutCorners,
+            cornerSize = defaults.opts.cornerSize,
         } = opts
 
         const initOpts = {
-            footingSize,
+            supportSize,
             thickness,
             postThickness,
             type,
             panelType,
             fitGap,
+            isOpen,
+            hasCutCorners,
+            cornerSize,
         }
-
 
         return initOpts
     }
-
-
-    //------------------------------------------------------------------------------
 
 
     /**
@@ -128,30 +136,32 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
      * @memberof newModelParent
      * @access private
      */
-    const groovedBaseProps = (opts) => {
-        const defaults = groovedBaseDefaults()
+    const groovedShelfProps = (opts) => {
+        const defaults = groovedShelfDefaults()
 
         const {
-            footingSize,
+            supportSize,
             thickness,
             postThickness,
             type,
             panelType,
             fitGap,
+            isOpen,
+            hasCutCorners,
+            cornerSize,
         } = opts
 
-        /* ----------------------------------------
-        * Prop calculations
-        * ------------------------------------- */
+        //----------------------------------------
+        // Prop calculations
 
-        const footingLength = footingSize[0]
-        const footingWidth = footingSize[1]
+        const footingLength = supportSize[0]
+        const footingWidth = supportSize[1]
 
         const wrapExtensionWidth = thickness + (fitGap / 2)
         const panelExtensiontWidth = type == 'flush' ? 0 : wrapExtensionWidth * 2
         const panelSize = [
-            footingSize[0] + panelExtensiontWidth,
-            footingSize[1] + panelExtensiontWidth,
+            supportSize[0] + panelExtensiontWidth,
+            supportSize[1] + panelExtensiontWidth,
         ]
         const panelLength = panelSize[0]
         const panelWidth = panelSize[1]
@@ -160,9 +170,8 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         const grooveHeight = postThickness * 0.3333
         const grooveWallHeight = grooveHeight + thickness
 
-        /* ----------------------------------------
-        * Preparing Model Properties, Dimensions
-        * ------------------------------------- */
+        //----------------------------------------
+        // Preparing Model Properties, Dimensions
 
         /** Constant values for model */
         const modelConstants = defaults.vals.constants
@@ -171,11 +180,13 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         const modelOpts = {
             type,
             panelType,
+            isOpen,
+            hasCutCorners,
         }
 
         /** Various dimensions for model */
         const modelDims = {
-            footingSize,
+            supportSize,
             thickness,
             postThickness,
             fitGap,
@@ -187,6 +198,7 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
             grooveWidth,
             grooveHeight,
             grooveWallHeight,
+            cornerSize,
         }
 
         /** Various key points for model */
@@ -195,11 +207,9 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         /** Components used by model */
         const modelComponents = defaults.vals.components
 
-        /* ---------------------------------------------
-        *  Model Properties
-        * ----------------------------------------------
-        * Properties accessible to all model functions.
-        * --------------------------------------------- */
+        //----------------------------------------
+        // MODEL PROPERTIES
+        // Properties accessible to all model functions.
 
         const modelProperties = {
             constants: modelConstants,
@@ -214,13 +224,11 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
     }
 
 
-    //------------------------------------------------------------------------------
+    //------------------------------------------------------------
+    // Secondary Modelling Functions
+    //------------------------------------------------------------
 
-    /* ----------------------------------------
-    * Modelling, Component/Assembly Modules
-    * ------------------------------------- */
 
-    /** Sub-component 01 */
     const exteriorGrooveWalls = (opts) => {
         const {
             thickness,
@@ -267,7 +275,6 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         return extWalls
     }
 
-    /** Sub-component 02 */
     const interiorGrooveWalls = (opts) => {
         const {
             thickness,
@@ -320,10 +327,101 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         return intWalls
     }
 
+    const centreCutaway = (opts) => {
+        const {
+            thickness,
+            postThickness,
+            fitGap,
+            footingLength,
+            footingWidth,
+            grooveWallHeight,
+        } = opts
+
+        const intMargin = postThickness + (fitGap / 2)
+        const ctrEdgeMargin = intMargin + thickness
+
+        const ctrEdgeDistX = footingLength - (ctrEdgeMargin * 2)
+        const ctrEdgeDistY = footingWidth - (ctrEdgeMargin * 2)
+
+        return cuboid({
+            size: [
+                ctrEdgeDistX,
+                ctrEdgeDistY,
+                grooveWallHeight * 4,
+            ]
+        })
+    }
+
+    const cornerCutaways = (opts) => {
+        const {
+            thickness,
+            fitGap,
+            panelLength,
+            panelWidth,
+            grooveWallHeight,
+            cornerSize,
+        } = opts
+
+        const cornerCutX = cornerSize[0] + fitGap + thickness
+        const cornerCutY = cornerSize[1] + fitGap + thickness
+
+        const cornerCutaway = cuboid({
+            size: [
+                cornerCutX,
+                cornerCutY,
+                grooveWallHeight * 4,
+            ]
+        })
+
+        const cutAdj = fitGap / 8
+        const cutaways = [
+            align({
+                modes: ['max', 'max', 'center'],
+                relativeTo: [
+                    panelLength / 2 + cutAdj,
+                    panelWidth / 2 + cutAdj,
+                    0
+                ],
+            }, cornerCutaway),
+            align({
+                modes: ['max', 'min', 'center'],
+                relativeTo: [
+                    panelLength / 2 + cutAdj,
+                    panelWidth / -2 - cutAdj,
+                    0
+                ],
+            }, cornerCutaway),
+            align({
+                modes: ['min', 'min', 'center'],
+                relativeTo: [
+                    panelLength / -2 - cutAdj,
+                    panelWidth / -2 - cutAdj,
+                    0
+                ],
+            }, cornerCutaway),
+            align({
+                modes: ['min', 'max', 'center'],
+                relativeTo: [
+                    panelLength / -2 - cutAdj,
+                    panelWidth / 2 + cutAdj,
+                    0
+                ],
+            }, cornerCutaway),
+        ]
+
+        return union(...cutaways)
+    }
+
+
+    //------------------------------------------------------------
+    // Primary Modelling Functions
+    //------------------------------------------------------------
+
+
     /**
      * Generates a new model
      * @param {Object} opts - Options for the model
-     * @param {number[]} opts.footingSize - 2D coord (length, width) of bearing surfaces
+     * @param {number[]} opts.supportSize - 2D coord (length, width) of bearing surfaces
      * @param {number} opts.thickness - thickness of this panel
      * @param {number} opts.postThickness - thickness of post/beam that fits against this panel
      * @param {string} opts.type - one of ['wrap', 'flush']
@@ -331,18 +429,20 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
      * @returns {Array.<(geom3|Object.<string, geom3>|Object.<string, any>)>} Array with model, parts, and properties
      * @memberof newModelParent
      */
-    const groovedBase = (opts) => {
-        const defaults = groovedBaseDefaults()
-        const initOpts = groovedBaseOpts(opts)
-        const modelProperties = groovedBaseProps(initOpts)
+    const groovedShelf = (opts) => {
+        const defaults = groovedShelfDefaults()
+        const initOpts = groovedShelfOpts(opts)
+        const modelProperties = groovedShelfProps(initOpts)
 
         const {
             type,
             panelType,
+            isOpen,
+            hasCutCorners,
         } = modelProperties.opts
 
         const {
-            footingSize,
+            supportSize,
             thickness,
             postThickness,
             fitGap,
@@ -354,11 +454,11 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
             grooveWidth,
             grooveHeight,
             grooveWallHeight,
+            cornerSize,
         } = modelProperties.dims
 
-        /* ----------------------------------------
-         * Outputs
-         * ------------------------------------- */
+        //----------------------------------------
+        // Initializing sub-components
 
         const polyPanelOpts = {
             size: panelSize,
@@ -382,19 +482,52 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
             grooveWallHeight,
         })
 
-        let groovedBaseAssembly = union(
+        //----------------------------------------
+        // Assembling sub-components
+
+        let groovedShelfAssembly = union(
             position.ctrMin(basePanel),
             position.ctrMin(intGrooveWalls),
         )
 
         if (type == 'wrap') {
-            groovedBaseAssembly = union(
+            groovedShelfAssembly = union(
                 position.ctrMin(extGrooveWalls),
-                position.ctrMin(groovedBaseAssembly),
+                position.ctrMin(groovedShelfAssembly),
             )
         }
 
-        const mainModel = groovedBaseAssembly
+        if (isOpen) {
+            const ctrCutaway = centreCutaway({
+                thickness,
+                postThickness,
+                fitGap,
+                footingLength,
+                footingWidth,
+                grooveWallHeight,
+            })
+            groovedShelfAssembly = subtract(
+                groovedShelfAssembly,
+                ctrCutaway
+            )
+        }
+
+        if (hasCutCorners) {
+            const cornCutaways = cornerCutaways({
+                thickness,
+                fitGap,
+                panelLength,
+                panelWidth,
+                grooveWallHeight,
+                cornerSize,
+            })
+            groovedShelfAssembly = subtract(
+                groovedShelfAssembly,
+                cornCutaways
+            )
+        }
+
+        const mainModel = groovedShelfAssembly
 
         const modelParts = {
             mainModel,
@@ -405,9 +538,9 @@ const groovedBaseInit = ({ jscad, swcadJs }) => {
         return [mainModel, modelParts, modelProperties]
     }
 
-    return groovedBase
+    return groovedShelf
 }
 
 module.exports = {
-    init: groovedBaseInit
+    init: groovedShelfInit
 }
