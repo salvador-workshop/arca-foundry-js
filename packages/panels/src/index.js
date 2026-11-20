@@ -132,32 +132,32 @@ function main() {
         positionType: 'side',
     })[0]
 
-    const groovedBaseOpts = {
-        footingSize: [math.inchesToMm(2.5), math.inchesToMm(2.5) + 4],
+    const groovedShelfOpts = {
+        supportSize: [math.inchesToMm(2.5), math.inchesToMm(2.5) + 4],
         thickness: 1.3333,
         postThickness: 4,
         panelType: 'minimal',
     }
 
     const gBase1 = groovedShelf({
-        ...groovedBaseOpts,
+        ...groovedShelfOpts,
         type: 'wrap'
     })[0]
 
     const gBase2 = groovedShelf({
-        ...groovedBaseOpts,
+        ...groovedShelfOpts,
         type: 'flush'
     })[0]
 
     const gBase3 = groovedShelf({
-        ...groovedBaseOpts,
+        ...groovedShelfOpts,
         panelType: 'lattice',
         // type: 'flush',
         isOpen: true,
     })[0]
 
     const gBase4 = groovedShelf({
-        ...groovedBaseOpts,
+        ...groovedShelfOpts,
         panelType: 'lattice',
         type: 'flush',
         hasCutCorners: true,
