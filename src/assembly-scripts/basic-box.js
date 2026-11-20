@@ -14,11 +14,11 @@ const panelsModule = require('panels')
 
 const {
     interlockDovetail: interlockDovetailModule,
-    groovedBase: groovedBaseModule,
+    groovedShelf: groovedShelfModule,
 } = panelsModule
 
 const interlockDovetail = interlockDovetailModule.init({ jscad, swcadJs })
-const groovedBase = groovedBaseModule.init({ jscad, swcadJs })
+const groovedShelf = groovedShelfModule.init({ jscad, swcadJs })
 
 
 // ----------------------------------------
@@ -114,8 +114,8 @@ function main(params) {
     // ----------------------------------------
     // Setting up base
 
-    const groovedBaseOpts = {
-        footingSize: [length, width],
+    const groovedShelfOpts = {
+        supportSize: [length, width],
         thickness: panelThickness,
         postThickness,
         panelType,
@@ -123,7 +123,7 @@ function main(params) {
         fitGap,
     }
 
-    const basePanel = groovedBase(groovedBaseOpts)[0]
+    const basePanel = groovedShelf(groovedShelfOpts)[0]
 
     return [
         facePanel,

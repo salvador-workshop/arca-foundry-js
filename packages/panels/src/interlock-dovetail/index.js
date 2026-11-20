@@ -252,7 +252,6 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
      * @memberof newModelParent
      */
     const interlockDovetail = (opts) => {
-        const defaults = interlockDovetailDefaults()
         const initOpts = interlockDovetailOpts(opts)
         const modelProperties = interlockDovetailProps(initOpts)
 

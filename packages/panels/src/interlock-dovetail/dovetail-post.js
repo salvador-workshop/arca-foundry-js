@@ -188,7 +188,6 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
         const {
             length,
             thickness,
-            dovetailLength,
             type,
             fitGap,
         } = opts
@@ -268,7 +267,13 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
 
         const extrudeHeightGrooves = thickness * 1.25
         const extrudeHeightDovetails = thickness * 0.75
-        const dPostDovetailProfile = dovetailPostDovetailProfile(opts)
+        const dPostDovetailProfile = dovetailPostDovetailProfile({
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        })
 
         let dovetailEdge = null
         if (type == 'female') {
@@ -309,10 +314,19 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
             fitGap,
         } = inOpts
 
-        const dPostBlank = dovetailPostBlank(inOpts)
-        const dPostCutaway = dovetailPostCutaway(inOpts)
-        const dPostDovetailProfile = dovetailPostDovetailProfile(inOpts)
-        const dPostDovetailEdge = dovetailPostDovetailEdge(inOpts)
+        const dPostBlank = dovetailPostBlank({
+            length,
+            thickness,
+            type,
+            fitGap,
+        })
+        const dPostDovetailEdge = dovetailPostDovetailEdge({
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        })
 
         let dovetailPostAssembly = null
         if (type == 'male') {

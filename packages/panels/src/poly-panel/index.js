@@ -223,7 +223,6 @@ const polyPanelInit = ({ jscad, swcadJs }) => {
      * @memberof newModelParent
      */
     const polyPanel = (opts) => {
-        const defaults = polyPanelDefaults()
         const initOpts = polyPanelOpts(opts)
         const modelProperties = polyPanelProps(initOpts)
 
