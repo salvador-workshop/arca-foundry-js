@@ -57,6 +57,7 @@ const rectangularPostFootInit = ({ jscad, swcadJs }) => {
 
     const {
         math,
+        position,
     } = swcadJs.calcs
 
 
@@ -77,32 +78,28 @@ const rectangularPostFootInit = ({ jscad, swcadJs }) => {
         const fitGap = standards.FIT_GAP
 
         const defaultValues = {
-            constants: {
-                interfaceThickness
-            },
-            opts: {
-                type: 'default',
-            },
+            constants: {},
+            opts: {},
             dims: {
-                size: [
-                    math.inchesToMm(2),
-                    math.inchesToMm(4),
-                    math.inchesToMm(1),
+                postSize: [
+                    5,
+                    7.5
                 ],
+                sleeveHeight: 4,
+                baseExtWidth: 4,
+                thickness: interfaceThickness,
                 fitGap,
             },
             points: {},
             components: {},
-            types: {
-                default: { id: 'default', desc: 'Default model' },
-                alt: { id: 'alt', desc: 'Alternate model' },
-            },
+            types: {},
         }
 
         const defaultOpts = {
-            size: defaultValues.dims.size,
-            type: defaultValues.opts.type,
-            interfaceThickness: defaultValues.constants.interfaceThickness,
+            postSize: defaultValues.dims.postSize,
+            sleeveHeight: defaultValues.dims.sleeveHeight,
+            baseExtWidth: defaultValues.dims.baseExtWidth,
+            thickness: defaultValues.dims.thickness,
             fitGap: defaultValues.dims.fitGap,
         }
 
@@ -122,24 +119,23 @@ const rectangularPostFootInit = ({ jscad, swcadJs }) => {
      */
     const rectangularPostFootOpts = (opts) => {
         const defaults = rectangularPostFootDefaults()
-        console.log('rectangularPostFootOpts() -- opts', opts)
 
         // User options
         const {
-            size = defaults.opts.size,
-            type = defaults.opts.type,
-            interfaceThickness = defaults.opts.interfaceThickness,
+            postSize = defaults.opts.postSize,
+            sleeveHeight = defaults.opts.sleeveHeight,
+            baseExtWidth = defaults.opts.baseExtWidth,
+            thickness = defaults.opts.thickness,
             fitGap = defaults.opts.fitGap,
         } = opts
 
         const initOpts = {
-            size,
-            type,
-            interfaceThickness,
+            postSize,
+            sleeveHeight,
+            baseExtWidth,
+            thickness,
             fitGap,
         }
-
-        console.log('rectangularPostFootOpts() -- initOpts', initOpts)
 
         return initOpts
     }
@@ -154,21 +150,20 @@ const rectangularPostFootInit = ({ jscad, swcadJs }) => {
      */
     const rectangularPostFootProps = (opts) => {
         const defaults = rectangularPostFootDefaults()
-        console.log('rectangularPostFootProps() -- prop opts', opts)
 
         const {
-            size,
-            type,
-            interfaceThickness,
+            postSize,
+            sleeveHeight,
+            baseExtWidth,
+            thickness,
             fitGap,
         } = opts
 
         //----------------------------------------
         // Prop calculations
 
-        const width = size[0]
-        const depth = size[1]
-        const height = size[2]
+        const postWidth = postSize[0]
+        const postDepth = postSize[1]
 
         //----------------------------------------
         // Preparing Model Properties, Dimensions
@@ -177,18 +172,17 @@ const rectangularPostFootInit = ({ jscad, swcadJs }) => {
         const modelConstants = defaults.vals.constants
 
         /** Derived user options for the model */
-        const modelOpts = {
-            type,
-        }
+        const modelOpts = defaults.vals.opts
 
         /** Various dimensions for model */
         const modelDims = {
-            size,
-            width,
-            depth,
-            height,
-            interfaceThickness,
+            postSize,
+            sleeveHeight,
+            baseExtWidth,
+            thickness,
             fitGap,
+            postWidth,
+            postDepth,
         }
 
         /** Various key points for model */
@@ -213,7 +207,6 @@ const rectangularPostFootInit = ({ jscad, swcadJs }) => {
             types: modelTypes,
         }
 
-        console.log('rectangularPostFootProps() -- modelProperties', modelProperties)
 
         return modelProperties
     }
@@ -224,24 +217,60 @@ const rectangularPostFootInit = ({ jscad, swcadJs }) => {
     //------------------------------------------------------------
 
 
-    const subcomponent1 = (opts) => {
+    const footBase = (opts) => {
         const {
-            size,
-            width,
-            depth,
+            baseExtWidth,
+            thickness,
+            postWidth,
+            postDepth,
         } = opts
 
-        return sphere()
+        const footSize = [
+            postWidth + (baseExtWidth * 2),
+            postDepth + (baseExtWidth * 2),
+        ]
+
+        return cuboid({
+            size: [
+                footSize[0],
+                footSize[1],
+                thickness
+            ]
+        })
     }
 
-    const subcomponent2 = (opts) => {
+    const footSleeve = (opts) => {
         const {
-            size,
-            width,
-            depth,
+            sleeveHeight,
+            thickness,
+            fitGap,
+            postWidth,
+            postDepth,
         } = opts
 
-        return cube()
+        const fittedPostSize = [
+            postWidth + fitGap,
+            postDepth + fitGap,
+        ]
+
+        const blankSize = [
+            fittedPostSize[0] + (thickness * 2),
+            fittedPostSize[1] + (thickness * 2),
+            sleeveHeight
+        ]
+        const sleeveBlank = cuboid({ size: blankSize })
+
+        const cutawaySize = [
+            fittedPostSize[0],
+            fittedPostSize[1],
+            sleeveHeight * 2
+        ]
+        const sleeveCutaway = cuboid({ size: cutawaySize })
+
+        return subtract(
+            sleeveBlank,
+            sleeveCutaway,
+        )
     }
 
 
@@ -253,57 +282,59 @@ const rectangularPostFootInit = ({ jscad, swcadJs }) => {
     /**
      * Generates a new model
      * @param {Object} opts - Options for the model
-     * @param {number[]} opts.size
-     * @param {string} opts.type
-     * @param {number} opts.reinforcementThickness
+     * @param {number[]} opts.postSize - post cross-section size (width, depth)
+     * @param {number} opts.sleeveHeight - height of footing sleeve
+     * @param {number} opts.baseExtWidth - width of base extension (edge of post to base edge)
+     * @param {number} opts.thickness - thickness of footing base and post sleeve
      * @param {number} opts.fitGap
      * @returns {Array.<(geom3|Object.<string, geom3>|Object.<string, any>)>} Array with model, parts, and properties
      * @memberof newModelParent
      */
     const rectangularPostFoot = (opts) => {
-        const defaults = rectangularPostFootDefaults()
         const initOpts = rectangularPostFootOpts(opts)
         const modelProperties = rectangularPostFootProps(initOpts)
 
         const {
-            type,
-        } = modelProperties.opts
-
-        const {
-            size,
-            width,
-            depth,
-            height,
-            interfaceThickness,
+            postSize,
+            sleeveHeight,
+            baseExtWidth,
+            thickness,
             fitGap,
+            postWidth,
+            postDepth,
         } = modelProperties.dims
 
         //----------------------------------------
         // Initializing sub-components
 
-        let subComp1 = subcomponent1({
-            size,
-            width,
-            depth,
+        const ftgBase = footBase({
+            baseExtWidth,
+            thickness,
+            postWidth,
+            postDepth,
         })
 
-        let subComp2 = subcomponent2({
-            size,
-            width,
-            depth,
+        const ftgSleeve = footSleeve({
+            sleeveHeight,
+            thickness,
+            fitGap,
+            postWidth,
+            postDepth,
         })
 
         //----------------------------------------
         // Assembling sub-components
 
-        const mainModel = union(
-            subComp1,
-            subComp2,
+        const footAssembly = union(
+            position.ctrMax(ftgBase),
+            position.ctrMin(ftgSleeve),
         )
 
+        const mainModel = position.ctr(footAssembly)
+
         const modelParts = {
-            subcomponent1: subComp1,
-            subcomponent2: subComp2,
+            subcomponent1: ftgBase,
+            subcomponent2: ftgSleeve,
         }
 
         return [mainModel, modelParts, modelProperties]

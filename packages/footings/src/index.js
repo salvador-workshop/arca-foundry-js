@@ -52,7 +52,12 @@ const { toOutlines } = jscad.geometries.geom2
 const { TAU } = jscad.maths.constants
 const { colorize } = jscad.colors
 
+const swcadJs = require('swcad-js').init({ jscad });
+
 const inchesToMm = (numIn) => numIn * 25.4
+
+const rectPostFootModule = require('./rectangular-post-foot/index.js')
+const rectPostFoot = rectPostFootModule.init({ jscad, swcadJs })
 
 
 //-----------------------------------------------
@@ -60,11 +65,15 @@ const inchesToMm = (numIn) => numIn * 25.4
 //-----------------------------------------------
 
 
-const newModelOpts = {
-    size: [inchesToMm(3), inchesToMm(3), inchesToMm(1)],
+const rectPostFootOpts = {
+    // postSize: 0,
+    // sleeveHeight: 0,
+    // baseExtWidth: 0,
+    // thickness: 0,
+    // fitGap: 0,
 }
 
-const newModel = cuboid(newModelOpts)
+const rectPostFootModel = rectPostFoot(rectPostFootOpts)[0]
 
 const spaceUnit = inchesToMm(3.5)
 
@@ -77,7 +86,7 @@ const spaceUnit = inchesToMm(3.5)
 function main() {
 
     return [
-        translate([spaceUnit * 0, spaceUnit * 0, spaceUnit * 0], newModel),
+        translate([spaceUnit * 0, spaceUnit * 0, spaceUnit * 0], rectPostFootModel),
     ]
 }
 
