@@ -212,18 +212,6 @@ const dovetailPostInit = ({ jscad, swcadJs }) => {
         return position.ctrMin(dPostBlank)
     }
 
-    const dovetailPostCutaway = (opts) => {
-        const {
-            length,
-            thickness,
-            dovetailLength,
-            type,
-            fitGap,
-        } = opts
-
-        return null
-    }
-
     const dovetailPostDovetailProfile = (opts) => {
         const {
             length,

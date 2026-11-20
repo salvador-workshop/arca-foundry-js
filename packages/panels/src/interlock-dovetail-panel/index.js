@@ -1,6 +1,6 @@
 "use strict"
 
-const interlockDovetailInit = ({ jscad, swcadJs }) => {
+const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
     const {
         cuboid,
     } = jscad.primitives
@@ -43,7 +43,7 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
      * @memberof newModelParent
      * @access private
      */
-    const interlockDovetailDefaults = () => {
+    const interlockDovetailPanelDefaults = () => {
         const interfaceThickness = standards.INTERFACE_THICKNESS
         const fitGap = standards.FIT_GAP
 
@@ -102,8 +102,8 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
      * @memberof newModelParent
      * @access private
      */
-    const interlockDovetailOpts = (opts) => {
-        const defaults = interlockDovetailDefaults()
+    const interlockDovetailPanelOpts = (opts) => {
+        const defaults = interlockDovetailPanelDefaults()
 
         // User options
         const {
@@ -140,8 +140,8 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
      * @memberof newModelParent
      * @access private
      */
-    const interlockDovetailProps = (opts) => {
-        const defaults = interlockDovetailDefaults()
+    const interlockDovetailPanelProps = (opts) => {
+        const defaults = interlockDovetailPanelDefaults()
 
         const {
             size,
@@ -251,9 +251,9 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
      * @returns {Array.<(geom3|Object.<string, geom3>|Object.<string, any>)>} Array with model, parts, and properties
      * @memberof newModelParent
      */
-    const interlockDovetail = (opts) => {
-        const initOpts = interlockDovetailOpts(opts)
-        const modelProperties = interlockDovetailProps(initOpts)
+    const interlockDovetailPanel = (opts) => {
+        const initOpts = interlockDovetailPanelOpts(opts)
+        const modelProperties = interlockDovetailPanelProps(initOpts)
 
         const {
             type,
@@ -340,9 +340,9 @@ const interlockDovetailInit = ({ jscad, swcadJs }) => {
         return [mainModel, modelParts, modelProperties]
     }
 
-    return interlockDovetail
+    return interlockDovetailPanel
 }
 
 module.exports = {
-    init: interlockDovetailInit
+    init: interlockDovetailPanelInit
 }
