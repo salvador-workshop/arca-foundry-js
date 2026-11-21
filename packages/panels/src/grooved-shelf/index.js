@@ -465,8 +465,8 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
 
         const cornerReinforcementBlank = (cuboid({
             size: [
-                cornerCutX + (thickness * 2),
-                cornerCutY + (thickness * 2),
+                cornerCutX + thickness,
+                cornerCutY + thickness,
                 thickness,
             ]
         }))

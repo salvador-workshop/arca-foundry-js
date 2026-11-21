@@ -184,7 +184,7 @@ function main() {
 
     const gBase5 = groovedShelf({
         ...groovedShelfOpts,
-        panelType: 'lattice',
+        panelType: 'minimal',
         type: 'wrap',
         hasCutCorners: true,
         cornerSize: [4, 6]
