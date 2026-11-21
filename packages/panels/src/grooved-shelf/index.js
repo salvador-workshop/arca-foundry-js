@@ -157,7 +157,7 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
         const footingLength = supportSize[0]
         const footingWidth = supportSize[1]
 
-        const wrapExtensionWidth = thickness + (fitGap / 2)
+        const wrapExtensionWidth = thickness + fitGap
         const panelExtensiontWidth = type == 'flush' ? 0 : wrapExtensionWidth * 2
         const panelSize = [
             supportSize[0] + panelExtensiontWidth,
@@ -171,7 +171,7 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
         const grooveWallHeight = grooveHeight + thickness
 
         const cornerEdgeAdj = type == 'flush' ? 0 : thickness
-        const cornerFitAdj = type == 'flush' ? fitGap / 2 : fitGap
+        const cornerFitAdj = type == 'flush' ? fitGap : fitGap * 2
 
         const cornerCutX = cornerSize[0] + cornerFitAdj + cornerEdgeAdj
         const cornerCutY = cornerSize[1] + cornerFitAdj + cornerEdgeAdj
@@ -327,7 +327,7 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
             grooveWallHeight,
         } = opts
 
-        const intMargin = postThickness + (fitGap / 2)
+        const intMargin = postThickness + fitGap
         const innerFtgEdgeDistX = footingLength - (intMargin * 2)
         const innerFtgEdgeDistY = footingWidth - (intMargin * 2)
 
@@ -379,7 +379,7 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
             grooveWallHeight,
         } = opts
 
-        const intMargin = postThickness + (fitGap / 2)
+        const intMargin = postThickness + fitGap
         const ctrEdgeMargin = intMargin + thickness
 
         const ctrEdgeDistX = footingLength - (ctrEdgeMargin * 2)

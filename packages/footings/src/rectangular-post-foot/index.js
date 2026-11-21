@@ -249,8 +249,8 @@ const rectangularPostFootInit = ({ jscad, swcadJs }) => {
         } = opts
 
         const fittedPostSize = [
-            postWidth + fitGap,
-            postDepth + fitGap,
+            postWidth + (fitGap * 2),
+            postDepth + (fitGap * 2),
         ]
 
         const blankSize = [
