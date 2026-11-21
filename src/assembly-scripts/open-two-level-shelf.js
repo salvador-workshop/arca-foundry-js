@@ -146,7 +146,7 @@ function main(params) {
         fitGap,
     }
 
-    const foot = rectangularPostFoot(rectPostFootOpts)
+    const foot = rectangularPostFoot(rectPostFootOpts)[0]
 
     return [
         facePanel,
