@@ -20,7 +20,5 @@
   ],
   "license": "MIT",
   "dependencies": {},
-  "devDependencies": {
-    "jsdoc": "^4.0.4"
-  }
+  "devDependencies": {}
 }
