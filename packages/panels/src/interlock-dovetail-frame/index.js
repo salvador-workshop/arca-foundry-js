@@ -25,12 +25,6 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
         position,
     } = swcadJs.calcs
 
-    // const dovetailPostModule = require('./dovetail-post.js')
-    // const dovetailPost = dovetailPostModule.init({ jscad, swcadJs })
-
-    // const polyPanelModule = require('../poly-panel/index.js')
-    // const polyPanel = polyPanelModule.init({ jscad, swcadJs })
-
     const polyPostModule = require('../poly-post/index.js')
     const polyPost = polyPostModule.init({ jscad, swcadJs })
 
@@ -309,7 +303,7 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
             rotate([0, 0, TAU / -4], pPost)
         )
 
-        let panelAssembly = leftPost
+        let frameAssembly = leftPost
 
         console.log(beamLevels)
         const beams = beamLevels.map(beamTopLevel => {
@@ -319,13 +313,13 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
             }, pBeam)
         })
 
-        panelAssembly = union(
-            panelAssembly,
+        frameAssembly = union(
+            frameAssembly,
             ...beams,
             rightPost,
         )
 
-        const mainModel = position.ctr(panelAssembly)
+        const mainModel = position.ctr(frameAssembly)
 
         const modelParts = {
             mainModel,
