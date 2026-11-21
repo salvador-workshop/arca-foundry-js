@@ -11,15 +11,20 @@ const projectConfigContent = require('./config.json');
 const projectConfig = projectConfigContent[0]
 
 const panelsModule = require('panels')
+const footingsModule = require('footings')
 
 const {
-    interlockDovetail: interlockDovetailModule,
+    interlockDovetailFrame: interlockDovetailFrameModule,
     groovedShelf: groovedShelfModule,
 } = panelsModule
 
-const interlockDovetail = interlockDovetailModule.init({ jscad, swcadJs })
-const groovedShelf = groovedShelfModule.init({ jscad, swcadJs })
+const {
+    rectangularPostFoot: rectangularPostFootModule,
+} = footingsModule
 
+const interlockDovetailFrame = interlockDovetailFrameModule.init({ jscad, swcadJs })
+const groovedShelf = groovedShelfModule.init({ jscad, swcadJs })
+const rectangularPostFoot = rectangularPostFootModule.init({ jscad, swcadJs })
 
 // ----------------------------------------
 // Model Input Parameters
@@ -87,11 +92,12 @@ function main(params) {
 
     const facePanelWidth = length
     const sidePanelWidth = width - postThickness
+    const postSize = [postThickness, postThickness * 1.5]
 
     // ----------------------------------------
     // Setting up face/side panels
 
-    const interDovetailPanelOpts = {
+    const interDovetailFrameOpts = {
         panelThickness,
         postThickness,
         dovetailLength,
@@ -99,20 +105,22 @@ function main(params) {
         fitGap,
     }
 
-    const facePanel = interlockDovetail({
-        ...interDovetailPanelOpts,
+    const facePanel = interlockDovetailFrame({
+        ...interDovetailFrameOpts,
         size: [facePanelWidth, height],
+        beamLevels: [height / 2, height],
         positionType: 'face',
     })[0]
 
-    const sidePanel = interlockDovetail({
-        ...interDovetailPanelOpts,
+    const sidePanel = interlockDovetailFrame({
+        ...interDovetailFrameOpts,
         size: [sidePanelWidth, height],
+        beamLevels: [height / 2, height],
         positionType: 'side',
     })[0]
 
     // ----------------------------------------
-    // Setting up base
+    // Setting up shelves
 
     const groovedShelfOpts = {
         supportSize: [length, width],
@@ -120,15 +128,31 @@ function main(params) {
         postThickness,
         panelType,
         type: 'wrap',
+        hasCutCorners: true,
+        cornerSize: postSize,
         fitGap,
     }
 
-    const basePanel = groovedShelf(groovedShelfOpts)[0]
+    const shelf = groovedShelf(groovedShelfOpts)[0]
+
+    // ----------------------------------------
+    // Setting up feet
+
+    const rectPostFootOpts = {
+        postSize,
+        sleeveHeight: 3,
+        baseExtWidth: 3,
+        thickness: panelThickness,
+        fitGap,
+    }
+
+    const foot = rectangularPostFoot(rectPostFootOpts)
 
     return [
         facePanel,
         sidePanel,
-        basePanel,
+        shelf,
+        foot,
     ]
 }
 

@@ -62,6 +62,7 @@ const scriptPaths = {
     basicBox: projectScriptPaths['basicBox'],
     mouldOnePart: projectScriptPaths['mouldOnePart'],
     mouldTwoPart: projectScriptPaths['mouldTwoPart'],
+    openTwoLevelShelf: projectScriptPaths['openTwoLevelShelf'],
 }
 
 const filenames = {

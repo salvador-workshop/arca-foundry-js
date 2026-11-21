@@ -102,6 +102,8 @@ if (detectedProject) {
             const modelDestPath = join(projInternalDir, mouldSubjectName)
             fs.copyFileSync(modelPath, modelDestPath)
             fs.copyFileSync(utils.scriptPaths.mouldOnePart, baseIndexDestPath)
+        } else if (projectType == 'openTwoLevelShelf') {
+            fs.copyFileSync(utils.scriptPaths.openTwoLevelShelf, baseIndexDestPath)
         } else {
             // default to "basic-box"
             fs.copyFileSync(utils.scriptPaths.basicBox, baseIndexDestPath)
