@@ -41,6 +41,7 @@ const projectTypes = {
     basicBox: { id: 'basic-box', description: '' },
     mouldOnePart: { id: 'mould-one-part', description: '' },
     mouldTwoPart: { id: 'mould-two-part', description: '' },
+    openTwoLevelShelf: { id: 'open-two-level-shelf', description: '' },
 }
 
 
@@ -61,6 +62,7 @@ const scriptPaths = {
     basicBox: projectScriptPaths['basicBox'],
     mouldOnePart: projectScriptPaths['mouldOnePart'],
     mouldTwoPart: projectScriptPaths['mouldTwoPart'],
+    openTwoLevelShelf: projectScriptPaths['openTwoLevelShelf'],
 }
 
 const filenames = {
