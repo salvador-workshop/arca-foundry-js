@@ -41,6 +41,7 @@ const projectTypes = {
     basicBox: { id: 'basic-box', description: '' },
     mouldOnePart: { id: 'mould-one-part', description: '' },
     mouldTwoPart: { id: 'mould-two-part', description: '' },
+    openTwoLevelShelf: { id: 'open-two-level-shelf', description: '' },
 }
 
 
