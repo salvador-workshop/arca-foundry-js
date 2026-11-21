@@ -170,6 +170,38 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
         const grooveHeight = postThickness * 0.3333
         const grooveWallHeight = grooveHeight + thickness
 
+        const cornerEdgeAdj = type == 'flush' ? 0 : thickness
+        const cornerFitAdj = type == 'flush' ? fitGap / 2 : fitGap
+
+        const cornerCutX = cornerSize[0] + cornerFitAdj + cornerEdgeAdj
+        const cornerCutY = cornerSize[1] + cornerFitAdj + cornerEdgeAdj
+        const cornerCutAdj = fitGap / 32
+
+        const cornerTopRight = [
+            panelLength / 2,
+            panelWidth / 2,
+            0
+        ]
+
+        const cornerBottomRight = [
+            panelLength / 2,
+            panelWidth / -2,
+            0
+        ]
+
+        const cornerBottomLeft = [
+            panelLength / -2,
+            panelWidth / -2,
+            0
+        ]
+
+        const cornerTopLeft = [
+            panelLength / -2,
+            panelWidth / 2,
+            0
+        ]
+
+
         //----------------------------------------
         // Preparing Model Properties, Dimensions
 
@@ -190,6 +222,7 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
             thickness,
             postThickness,
             fitGap,
+            cornerSize,
             footingLength,
             footingWidth,
             panelSize,
@@ -198,11 +231,20 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
             grooveWidth,
             grooveHeight,
             grooveWallHeight,
-            cornerSize,
+            cornerEdgeAdj,
+            cornerFitAdj,
+            cornerCutX,
+            cornerCutY,
+            cornerCutAdj,
         }
 
         /** Various key points for model */
-        const modelPoints = defaults.vals.points
+        const modelPoints = {
+            cornerTopRight,
+            cornerBottomRight,
+            cornerBottomLeft,
+            cornerTopLeft,
+        }
 
         /** Components used by model */
         const modelComponents = defaults.vals.components
@@ -354,20 +396,15 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
 
     const cornerCutaways = (opts) => {
         const {
-            type,
-            thickness,
-            fitGap,
-            panelLength,
-            panelWidth,
             grooveWallHeight,
-            cornerSize,
+            cornerCutX,
+            cornerCutY,
+            cornerTopRight,
+            cornerBottomRight,
+            cornerBottomLeft,
+            cornerTopLeft,
+            cornerCutAdj
         } = opts
-
-        const edgeAdj = type == 'flush' ? 0 : thickness
-        const fitAdj = type == 'flush' ? fitGap / 2 : fitGap
-
-        const cornerCutX = cornerSize[0] + fitAdj + edgeAdj
-        const cornerCutY = cornerSize[1] + fitAdj + edgeAdj
 
         const cornerCutaway = cuboid({
             size: [
@@ -377,44 +414,83 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
             ]
         })
 
-        const cutAdj = fitGap / 32
-
         const cutaways = [
             align({
                 modes: ['max', 'max', 'center'],
                 relativeTo: [
-                    panelLength / 2 + cutAdj,
-                    panelWidth / 2 + cutAdj,
+                    cornerTopRight[0] + cornerCutAdj,
+                    cornerTopRight[1] + cornerCutAdj,
                     0
                 ],
             }, cornerCutaway),
             align({
                 modes: ['max', 'min', 'center'],
                 relativeTo: [
-                    panelLength / 2 + cutAdj,
-                    panelWidth / -2 - cutAdj,
+                    cornerBottomRight[0] + cornerCutAdj,
+                    cornerBottomRight[1] - cornerCutAdj,
                     0
                 ],
             }, cornerCutaway),
             align({
                 modes: ['min', 'min', 'center'],
                 relativeTo: [
-                    panelLength / -2 - cutAdj,
-                    panelWidth / -2 - cutAdj,
+                    cornerBottomLeft[0] - cornerCutAdj,
+                    cornerBottomLeft[1] - cornerCutAdj,
                     0
                 ],
             }, cornerCutaway),
             align({
                 modes: ['min', 'max', 'center'],
                 relativeTo: [
-                    panelLength / -2 - cutAdj,
-                    panelWidth / 2 + cutAdj,
+                    cornerTopLeft[0] - cornerCutAdj,
+                    cornerTopLeft[1] + cornerCutAdj,
                     0
                 ],
             }, cornerCutaway),
         ]
 
         return union(...cutaways)
+    }
+
+    const cornerCutawayReinforcementBlanks = (opts) => {
+        const {
+            thickness,
+            cornerCutX,
+            cornerCutY,
+            cornerTopRight,
+            cornerBottomRight,
+            cornerBottomLeft,
+            cornerTopLeft,
+        } = opts
+
+        const cornerReinforcementBlank = (cuboid({
+            size: [
+                cornerCutX + (thickness * 2),
+                cornerCutY + (thickness * 2),
+                thickness,
+            ]
+        }))
+
+        const cutawayReinforcementBlanks = [
+            align({
+                modes: ['max', 'max', 'min'],
+                relativeTo: cornerTopRight,
+            }, cornerReinforcementBlank),
+            align({
+                modes: ['max', 'min', 'min'],
+                relativeTo: cornerBottomRight,
+            }, cornerReinforcementBlank),
+            align({
+                modes: ['min', 'min', 'min'],
+                relativeTo: cornerBottomLeft,
+            }, cornerReinforcementBlank),
+            align({
+                modes: ['min', 'max', 'min'],
+                relativeTo: cornerTopLeft,
+            }, cornerReinforcementBlank),
+        ]
+
+        return union(...cutawayReinforcementBlanks)
     }
 
 
@@ -450,14 +526,26 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
             thickness,
             postThickness,
             fitGap,
+            cornerSize,
             footingLength,
             footingWidth,
             panelSize,
             panelLength,
             panelWidth,
             grooveWallHeight,
-            cornerSize,
+            cornerEdgeAdj,
+            cornerFitAdj,
+            cornerCutX,
+            cornerCutY,
+            cornerCutAdj,
         } = modelProperties.dims
+
+        const {
+            cornerTopRight,
+            cornerBottomRight,
+            cornerBottomLeft,
+            cornerTopLeft,
+        } = modelProperties.points
 
         //----------------------------------------
         // Initializing sub-components
@@ -515,14 +603,30 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
         }
 
         if (hasCutCorners) {
+            if (['mesh', 'lattice', 'minimal'].includes(panelType)) {
+                const cornerReinfBlanks = cornerCutawayReinforcementBlanks({
+                    thickness,
+                    cornerCutX,
+                    cornerCutY,
+                    cornerTopRight,
+                    cornerBottomRight,
+                    cornerBottomLeft,
+                    cornerTopLeft,
+                })
+                groovedShelfAssembly = union(
+                    groovedShelfAssembly,
+                    cornerReinfBlanks
+                )
+            }
             const cornCutaways = cornerCutaways({
-                type,
-                thickness,
-                fitGap,
-                panelLength,
-                panelWidth,
                 grooveWallHeight,
-                cornerSize,
+                cornerCutX,
+                cornerCutY,
+                cornerTopRight,
+                cornerBottomRight,
+                cornerBottomLeft,
+                cornerTopLeft,
+                cornerCutAdj,
             })
             groovedShelfAssembly = subtract(
                 groovedShelfAssembly,

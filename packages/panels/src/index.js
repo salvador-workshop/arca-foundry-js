@@ -182,6 +182,14 @@ function main() {
         cornerSize: [4, 6]
     })[0]
 
+    const gBase5 = groovedShelf({
+        ...groovedShelfOpts,
+        panelType: 'lattice',
+        type: 'wrap',
+        hasCutCorners: true,
+        cornerSize: [4, 6]
+    })[0]
+
     const modelRow1 = [
         // dPost1,
         // dPost2,
@@ -203,6 +211,7 @@ function main() {
         gBase2,
         gBase3,
         gBase4,
+        gBase5,
     ]
 
     const outModels1 = modelRow1.map((oModel, idx) => {
