@@ -128,12 +128,15 @@ function main(params) {
         postThickness,
         panelType,
         type: 'wrap',
-        hasCutCorners: true,
-        cornerSize: postSize,
         fitGap,
     }
 
-    const shelf = groovedShelf(groovedShelfOpts)[0]
+    const topShelf = groovedShelf(groovedShelfOpts)[0]
+    const midShelf = groovedShelf({
+        ...groovedShelfOpts,
+        hasCutCorners: true,
+        cornerSize: postSize,
+    })[0]
 
     // ----------------------------------------
     // Setting up feet
@@ -151,7 +154,8 @@ function main(params) {
     return [
         facePanel,
         sidePanel,
-        shelf,
+        topShelf,
+        midShelf,
         foot,
     ]
 }
