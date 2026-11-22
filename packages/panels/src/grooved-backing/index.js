@@ -50,37 +50,31 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             opts: {
                 type: 'wrap',
                 panelType: 'solid',
-                isOpen: false,
-                hasCutCorners: false,
             },
             dims: {
-                supportSize: [
-                    math.inchesToMm(2),
-                    math.inchesToMm(4),
-                ],
+                supportSpan: math.inchesToMm(2),
+                backingwidth: math.inchesToMm(4),
                 thickness: interfaceThickness,
                 postThickness: 5,
                 fitGap,
-                cornerSize: [5, 7.5],
             },
             points: {},
             components: {},
             types: {
-                wrap: { id: 'wrap', desc: 'Base w/ groove completely wrapping around beam.' },
-                flush: { id: 'flush', desc: 'Base w/ groove partially wrapping around beam.' },
+                wrap: { id: 'wrap', desc: 'Backing w/ groove completely wrapping around beam.' },
+                flush: { id: 'flush', desc: 'Backing w/ groove partially wrapping around beam, flush with corner.' },
+                flush: { id: 'lip', desc: 'Backing w/ groove partially wrapping around beam.' },
             },
         }
 
         const defaultOpts = {
-            supportSize: defaultValues.dims.supportSize,
+            supportSpan: defaultValues.dims.supportSpan,
+            backingwidth: defaultValues.dims.backingwidth,
             thickness: defaultValues.dims.thickness,
             postThickness: defaultValues.dims.postThickness,
             type: defaultValues.opts.type,
             panelType: defaultValues.opts.panelType,
             fitGap: defaultValues.dims.fitGap,
-            isOpen: defaultValues.opts.isOpen,
-            hasCutCorners: defaultValues.opts.hasCutCorners,
-            cornerSize: defaultValues.dims.cornerSize,
         }
 
         return {
@@ -102,27 +96,23 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
 
         // User options
         const {
-            supportSize = defaults.opts.supportSize,
+            supportSpan = defaults.opts.supportSpan,
+            backingwidth = defaults.opts.backingwidth,
             thickness = defaults.opts.thickness,
             postThickness = defaults.opts.postThickness,
             type = defaults.opts.type,
             panelType = defaults.opts.panelType,
             fitGap = defaults.opts.fitGap,
-            isOpen = defaults.opts.isOpen,
-            hasCutCorners = defaults.opts.hasCutCorners,
-            cornerSize = defaults.opts.cornerSize,
         } = opts
 
         const initOpts = {
-            supportSize,
+            supportSpan,
+            backingwidth,
             thickness,
             postThickness,
             type,
             panelType,
             fitGap,
-            isOpen,
-            hasCutCorners,
-            cornerSize,
         }
 
         return initOpts
@@ -140,28 +130,30 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
         const defaults = groovedBackingDefaults()
 
         const {
-            supportSize,
+            supportSpan,
+            backingwidth,
             thickness,
             postThickness,
             type,
             panelType,
             fitGap,
-            isOpen,
-            hasCutCorners,
-            cornerSize,
         } = opts
 
         //----------------------------------------
         // Prop calculations
 
-        const footingLength = supportSize[0]
-        const footingWidth = supportSize[1]
+        let panelExtensiontWidth = 0
+        if (type == 'wrap') {
+            const wrapExtensionWidth = thickness + fitGap
+            panelExtensiontWidth = wrapExtensionWidth * 2
+        } else if (type == 'lip') {
+            const lipExt = postThickness / 2
+            panelExtensiontWidth = lipExt * -2
+        }
 
-        const wrapExtensionWidth = thickness + fitGap
-        const panelExtensiontWidth = type == 'flush' ? 0 : wrapExtensionWidth * 2
         const panelSize = [
-            supportSize[0] + panelExtensiontWidth,
-            supportSize[1] + panelExtensiontWidth,
+            supportSpan + panelExtensiontWidth,
+            backingwidth,
         ]
         const panelLength = panelSize[0]
         const panelWidth = panelSize[1]
@@ -170,36 +162,6 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
         const grooveHeight = postThickness * 0.3333
         const grooveWallHeight = grooveHeight + thickness
 
-        const cornerEdgeAdj = type == 'flush' ? 0 : thickness
-        const cornerFitAdj = type == 'flush' ? fitGap : fitGap * 2
-
-        const cornerCutX = cornerSize[0] + cornerFitAdj + cornerEdgeAdj
-        const cornerCutY = cornerSize[1] + cornerFitAdj + cornerEdgeAdj
-        const cornerCutAdj = fitGap / 32
-
-        const cornerTopRight = [
-            panelLength / 2,
-            panelWidth / 2,
-            0
-        ]
-
-        const cornerBottomRight = [
-            panelLength / 2,
-            panelWidth / -2,
-            0
-        ]
-
-        const cornerBottomLeft = [
-            panelLength / -2,
-            panelWidth / -2,
-            0
-        ]
-
-        const cornerTopLeft = [
-            panelLength / -2,
-            panelWidth / 2,
-            0
-        ]
 
 
         //----------------------------------------
@@ -212,39 +174,27 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
         const modelOpts = {
             type,
             panelType,
-            isOpen,
-            hasCutCorners,
         }
 
         /** Various dimensions for model */
         const modelDims = {
-            supportSize,
+            supportSpan,
+            backingwidth,
             thickness,
             postThickness,
             fitGap,
-            cornerSize,
-            footingLength,
-            footingWidth,
+            supportSpan,
+            // footingWidth,
             panelSize,
             panelLength,
             panelWidth,
             grooveWidth,
             grooveHeight,
             grooveWallHeight,
-            cornerEdgeAdj,
-            cornerFitAdj,
-            cornerCutX,
-            cornerCutY,
-            cornerCutAdj,
         }
 
         /** Various key points for model */
-        const modelPoints = {
-            cornerTopRight,
-            cornerBottomRight,
-            cornerBottomLeft,
-            cornerTopLeft,
-        }
+        const modelPoints = defaults.vals.points
 
         /** Components used by model */
         const modelComponents = defaults.vals.components
@@ -279,14 +229,6 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             grooveWallHeight,
         } = opts
 
-        const extGrooveWallX = cuboid({
-            size: [
-                panelLength,
-                thickness,
-                grooveWallHeight,
-            ]
-        })
-
         const extGrooveWallY = cuboid({
             size: [
                 thickness,
@@ -297,17 +239,9 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
 
         const extWalls = union(
             align({
-                modes: ['center', 'min', 'center'],
-                relativeTo: [0, panelWidth / -2, 0]
-            }, extGrooveWallX),
-            align({
                 modes: ['min', 'center', 'center'],
                 relativeTo: [panelLength / -2, 0, 0]
             }, extGrooveWallY),
-            align({
-                modes: ['center', 'max', 'center'],
-                relativeTo: [0, panelWidth / 2, 0]
-            }, extGrooveWallX),
             align({
                 modes: ['max', 'center', 'center'],
                 relativeTo: [panelLength / 2, 0, 0]
@@ -322,44 +256,27 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             thickness,
             postThickness,
             fitGap,
-            footingLength,
-            footingWidth,
+            supportSpan,
+            backingwidth,
             grooveWallHeight,
         } = opts
 
         const intMargin = postThickness + fitGap
-        const innerFtgEdgeDistX = footingLength - (intMargin * 2)
-        const innerFtgEdgeDistY = footingWidth - (intMargin * 2)
-
-        const intGrooveWallX = cuboid({
-            size: [
-                innerFtgEdgeDistX,
-                thickness,
-                grooveWallHeight,
-            ]
-        })
+        const innerFtgEdgeDistX = supportSpan - (intMargin * 2)
 
         const intGrooveWallY = cuboid({
             size: [
                 thickness,
-                innerFtgEdgeDistY,
+                backingwidth,
                 grooveWallHeight,
             ]
         })
 
         const intWalls = union(
             align({
-                modes: ['center', 'min', 'center'],
-                relativeTo: [0, innerFtgEdgeDistY / -2, 0]
-            }, intGrooveWallX),
-            align({
                 modes: ['min', 'center', 'center'],
                 relativeTo: [innerFtgEdgeDistX / -2, 0, 0]
             }, intGrooveWallY),
-            align({
-                modes: ['center', 'max', 'center'],
-                relativeTo: [0, innerFtgEdgeDistY / 2, 0]
-            }, intGrooveWallX),
             align({
                 modes: ['max', 'center', 'center'],
                 relativeTo: [innerFtgEdgeDistX / 2, 0, 0]
@@ -367,130 +284,6 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
         )
 
         return intWalls
-    }
-
-    const centreCutaway = (opts) => {
-        const {
-            thickness,
-            postThickness,
-            fitGap,
-            footingLength,
-            footingWidth,
-            grooveWallHeight,
-        } = opts
-
-        const intMargin = postThickness + fitGap
-        const ctrEdgeMargin = intMargin + thickness
-
-        const ctrEdgeDistX = footingLength - (ctrEdgeMargin * 2)
-        const ctrEdgeDistY = footingWidth - (ctrEdgeMargin * 2)
-
-        return cuboid({
-            size: [
-                ctrEdgeDistX,
-                ctrEdgeDistY,
-                grooveWallHeight * 4,
-            ]
-        })
-    }
-
-    const cornerCutaways = (opts) => {
-        const {
-            grooveWallHeight,
-            cornerCutX,
-            cornerCutY,
-            cornerTopRight,
-            cornerBottomRight,
-            cornerBottomLeft,
-            cornerTopLeft,
-            cornerCutAdj
-        } = opts
-
-        const cornerCutaway = cuboid({
-            size: [
-                cornerCutX,
-                cornerCutY,
-                grooveWallHeight * 4,
-            ]
-        })
-
-        const cutaways = [
-            align({
-                modes: ['max', 'max', 'center'],
-                relativeTo: [
-                    cornerTopRight[0] + cornerCutAdj,
-                    cornerTopRight[1] + cornerCutAdj,
-                    0
-                ],
-            }, cornerCutaway),
-            align({
-                modes: ['max', 'min', 'center'],
-                relativeTo: [
-                    cornerBottomRight[0] + cornerCutAdj,
-                    cornerBottomRight[1] - cornerCutAdj,
-                    0
-                ],
-            }, cornerCutaway),
-            align({
-                modes: ['min', 'min', 'center'],
-                relativeTo: [
-                    cornerBottomLeft[0] - cornerCutAdj,
-                    cornerBottomLeft[1] - cornerCutAdj,
-                    0
-                ],
-            }, cornerCutaway),
-            align({
-                modes: ['min', 'max', 'center'],
-                relativeTo: [
-                    cornerTopLeft[0] - cornerCutAdj,
-                    cornerTopLeft[1] + cornerCutAdj,
-                    0
-                ],
-            }, cornerCutaway),
-        ]
-
-        return union(...cutaways)
-    }
-
-    const cornerCutawayReinforcementBlanks = (opts) => {
-        const {
-            thickness,
-            cornerCutX,
-            cornerCutY,
-            cornerTopRight,
-            cornerBottomRight,
-            cornerBottomLeft,
-            cornerTopLeft,
-        } = opts
-
-        const cornerReinforcementBlank = (cuboid({
-            size: [
-                cornerCutX + thickness,
-                cornerCutY + thickness,
-                thickness,
-            ]
-        }))
-
-        const cutawayReinforcementBlanks = [
-            align({
-                modes: ['max', 'max', 'min'],
-                relativeTo: cornerTopRight,
-            }, cornerReinforcementBlank),
-            align({
-                modes: ['max', 'min', 'min'],
-                relativeTo: cornerBottomRight,
-            }, cornerReinforcementBlank),
-            align({
-                modes: ['min', 'min', 'min'],
-                relativeTo: cornerBottomLeft,
-            }, cornerReinforcementBlank),
-            align({
-                modes: ['min', 'max', 'min'],
-                relativeTo: cornerTopLeft,
-            }, cornerReinforcementBlank),
-        ]
-
-        return union(...cutawayReinforcementBlanks)
     }
 
 
@@ -502,7 +295,8 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
     /**
      * Generates a new model
      * @param {Object} opts - Options for the model
-     * @param {number[]} opts.supportSize - 2D coord (length, width) of bearing surfaces
+     * @param {number[]} opts.supportSpan - distance between bearing surfaces' external edges
+     * @param {number[]} opts.backingwidth - width of backing panel
      * @param {number} opts.thickness - thickness of this panel
      * @param {number} opts.postThickness - thickness of post/beam that fits against this panel
      * @param {string} opts.type - one of ['wrap', 'flush']
@@ -518,34 +312,20 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
         const {
             type,
             panelType,
-            isOpen,
-            hasCutCorners,
         } = modelProperties.opts
 
         const {
             thickness,
             postThickness,
             fitGap,
-            cornerSize,
-            footingLength,
+            supportSpan,
+            backingwidth,
             footingWidth,
             panelSize,
             panelLength,
             panelWidth,
             grooveWallHeight,
-            cornerEdgeAdj,
-            cornerFitAdj,
-            cornerCutX,
-            cornerCutY,
-            cornerCutAdj,
         } = modelProperties.dims
-
-        const {
-            cornerTopRight,
-            cornerBottomRight,
-            cornerBottomLeft,
-            cornerTopLeft,
-        } = modelProperties.points
 
         //----------------------------------------
         // Initializing sub-components
@@ -561,7 +341,8 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             thickness,
             postThickness,
             fitGap,
-            footingLength,
+            supportSpan,
+            backingwidth,
             footingWidth,
             grooveWallHeight,
         })
@@ -584,53 +365,6 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             groovedBackingAssembly = union(
                 position.ctrMin(extGrooveWalls),
                 position.ctrMin(groovedBackingAssembly),
-            )
-        }
-
-        if (isOpen) {
-            const ctrCutaway = centreCutaway({
-                thickness,
-                postThickness,
-                fitGap,
-                footingLength,
-                footingWidth,
-                grooveWallHeight,
-            })
-            groovedBackingAssembly = subtract(
-                groovedBackingAssembly,
-                ctrCutaway
-            )
-        }
-
-        if (hasCutCorners) {
-            if (['mesh', 'lattice', 'minimal'].includes(panelType)) {
-                const cornerReinfBlanks = cornerCutawayReinforcementBlanks({
-                    thickness,
-                    cornerCutX,
-                    cornerCutY,
-                    cornerTopRight,
-                    cornerBottomRight,
-                    cornerBottomLeft,
-                    cornerTopLeft,
-                })
-                groovedBackingAssembly = union(
-                    groovedBackingAssembly,
-                    cornerReinfBlanks
-                )
-            }
-            const cornCutaways = cornerCutaways({
-                grooveWallHeight,
-                cornerCutX,
-                cornerCutY,
-                cornerTopRight,
-                cornerBottomRight,
-                cornerBottomLeft,
-                cornerTopLeft,
-                cornerCutAdj,
-            })
-            groovedBackingAssembly = subtract(
-                groovedBackingAssembly,
-                cornCutaways
             )
         }
 

@@ -66,8 +66,8 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
             points: {},
             components: {},
             types: {
-                wrap: { id: 'wrap', desc: 'Base w/ groove completely wrapping around beam.' },
-                flush: { id: 'flush', desc: 'Base w/ groove partially wrapping around beam.' },
+                wrap: { id: 'wrap', desc: 'Shelf w/ groove completely wrapping around beam.' },
+                flush: { id: 'flush', desc: 'Shelf w/ groove partially wrapping around beam.' },
             },
         }
 

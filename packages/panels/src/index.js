@@ -73,6 +73,9 @@ const interlockDovetailFrame = interlockDovetailFrameModule.init({ jscad, swcadJ
 const groovedShelfModule = require('./grooved-shelf/index.js')
 const groovedShelf = groovedShelfModule.init({ jscad, swcadJs })
 
+const groovedBackingModule = require('./grooved-backing/index.js')
+const groovedBacking = groovedBackingModule.init({ jscad, swcadJs })
+
 //------------------------------------------------------------------------------
 
 const spaceUnit = math.inchesToMm(4.5)
@@ -157,24 +160,24 @@ function main() {
         panelType: 'minimal',
     }
 
-    const gBase1 = groovedShelf({
+    const gShelf1 = groovedShelf({
         ...groovedShelfOpts,
         type: 'wrap'
     })[0]
 
-    const gBase2 = groovedShelf({
+    const gShelf2 = groovedShelf({
         ...groovedShelfOpts,
         type: 'flush'
     })[0]
 
-    const gBase3 = groovedShelf({
+    const gShelf3 = groovedShelf({
         ...groovedShelfOpts,
         panelType: 'lattice',
         // type: 'flush',
         isOpen: true,
     })[0]
 
-    const gBase4 = groovedShelf({
+    const gShelf4 = groovedShelf({
         ...groovedShelfOpts,
         panelType: 'lattice',
         type: 'flush',
@@ -182,12 +185,35 @@ function main() {
         cornerSize: [4, 6]
     })[0]
 
-    const gBase5 = groovedShelf({
+    const gShelf5 = groovedShelf({
         ...groovedShelfOpts,
         panelType: 'minimal',
         type: 'wrap',
         hasCutCorners: true,
         cornerSize: [4, 6]
+    })[0]
+
+    const groovedBackingOpts = {
+        supportSpan: math.inchesToMm(2.5),
+        backingWidth: math.inchesToMm(3.5),
+        thickness: 1.3333,
+        postThickness: 4,
+        panelType: 'minimal',
+    }
+
+    const gBacking1 = groovedBacking({
+        ...groovedShelfOpts,
+        type: 'wrap'
+    })[0]
+
+    const gBacking2 = groovedBacking({
+        ...groovedShelfOpts,
+        type: 'flush'
+    })[0]
+
+    const gBacking3 = groovedBacking({
+        ...groovedShelfOpts,
+        type: 'lip'
     })[0]
 
     const modelRow1 = [
@@ -207,11 +233,17 @@ function main() {
     ]
 
     const modelRow3 = [
-        gBase1,
-        gBase2,
-        gBase3,
-        gBase4,
-        gBase5,
+        gShelf1,
+        gShelf2,
+        gShelf3,
+        gShelf4,
+        gShelf5,
+    ]
+
+    const modelRow4 = [
+        gBacking1,
+        gBacking2,
+        gBacking3,
     ]
 
     const outModels1 = modelRow1.map((oModel, idx) => {
@@ -226,13 +258,18 @@ function main() {
         return translate([idx * spaceUnit, spaceUnit * 2, 0], oModel)
     })
 
+    const outModels4 = modelRow4.map((oModel, idx) => {
+        return translate([idx * spaceUnit, spaceUnit * 3, 0], oModel)
+    })
+
     return [
         ...outModels1,
         ...outModels2,
         ...outModels3,
+        ...outModels4,
     ]
 
-    // return gBase2
+    // return gShelf2
 }
 
 
