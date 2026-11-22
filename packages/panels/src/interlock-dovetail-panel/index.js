@@ -57,6 +57,7 @@ const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
                 type: 'simple',
                 bodyType: 'solid',
                 positionType: 'face',
+                omitBottomPanelBeam: false,
             },
             dims: {
                 size: [
@@ -84,6 +85,7 @@ const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
             type: defaultValues.opts.type,
             bodyType: defaultValues.opts.bodyType,
             positionType: defaultValues.opts.positionType,
+            omitBottomPanelBeam: defaultValues.opts.omitBottomPanelBeam,
             fitGap: defaultValues.dims.fitGap,
         }
 
@@ -114,6 +116,7 @@ const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
             type = defaults.opts.type,
             bodyType = defaults.opts.bodyType,
             positionType = defaults.opts.positionType,
+            omitBottomPanelBeam = defaults.opts.omitBottomPanelBeam,
             fitGap = defaults.opts.fitGap,
         } = opts
 
@@ -126,6 +129,7 @@ const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
             type,
             bodyType,
             positionType,
+            omitBottomPanelBeam,
             fitGap,
         }
 
@@ -153,6 +157,7 @@ const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
             type,
             bodyType,
             positionType,
+            omitBottomPanelBeam,
             fitGap,
         } = opts
 
@@ -190,6 +195,7 @@ const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
             type,
             bodyType,
             positionType,
+            omitBottomPanelBeam,
         }
 
         /** Various dimensions for model */
@@ -263,6 +269,7 @@ const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
             type,
             bodyType,
             positionType,
+            omitBottomPanelBeam,
         } = modelProperties.opts
 
         const {
@@ -284,7 +291,9 @@ const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
 
         const beamLevels = []
         panelLevels.forEach(panelLevelPair => {
-            beamLevels.push(panelLevelPair[0] + postThickness)
+            if (!omitBottomPanelBeam) {
+                beamLevels.push(panelLevelPair[0] + postThickness)
+            }
             beamLevels.push(panelLevelPair[1])
         })
         const interlockDovetailFrameOpts = {
@@ -303,7 +312,10 @@ const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
         }, pFrame)
 
         const panels = panelLevels.map(panelLevelPair => {
-            const panelHt = panelLevelPair[1] - panelLevelPair[0] - (postThickness * 2)
+            let panelHt = panelLevelPair[1] - panelLevelPair[0] - (postThickness * 2)
+            if (omitBottomPanelBeam) {
+                panelHt = panelLevelPair[1] - panelLevelPair[0] - postThickness
+            }
             const polyPanelOpts = {
                 size: [
                     panelLength,

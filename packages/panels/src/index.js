@@ -153,6 +153,17 @@ function main() {
         ]
     })[0]
 
+    const interlockDovetailPanel5 = interlockDovetailPanel({
+        ...interlockDovetailPanelOpts,
+        bodyType: 'minimal',
+        positionType: 'side',
+        panelLevels: [
+            [math.inchesToMm(0.5), math.inchesToMm(2)],
+            [math.inchesToMm(2.25), math.inchesToMm(3.5)],
+        ],
+        omitBottomPanelBeam: true,
+    })[0]
+
     const groovedShelfOpts = {
         supportSize: [math.inchesToMm(2.5), math.inchesToMm(2.5) + 4],
         thickness: 1.3333,
@@ -202,28 +213,28 @@ function main() {
     }
 
     const gBacking1 = groovedBacking({
-        ...groovedShelfOpts,
+        ...groovedBackingOpts,
         type: 'wrap'
     })[0]
 
     const gBacking2 = groovedBacking({
-        ...groovedShelfOpts,
+        ...groovedBackingOpts,
         type: 'flush'
     })[0]
 
     const gBacking3 = groovedBacking({
-        ...groovedShelfOpts,
+        ...groovedBackingOpts,
         type: 'lip'
     })[0]
 
     const gBacking4 = groovedBacking({
-        ...groovedShelfOpts,
+        ...groovedBackingOpts,
         type: 'flush',
         hasBottomLip: true,
     })[0]
 
     const gBacking5 = groovedBacking({
-        ...groovedShelfOpts,
+        ...groovedBackingOpts,
         type: 'lip',
         hasBottomLip: true,
     })[0]
@@ -242,6 +253,7 @@ function main() {
         interlockDovetailPanel2,
         interlockDovetailPanel3,
         interlockDovetailPanel4,
+        interlockDovetailPanel5,
     ]
 
     const modelRow3 = [
