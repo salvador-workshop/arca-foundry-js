@@ -2,12 +2,7 @@
 
 const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
     const {
-        cuboid,
-    } = jscad.primitives
-
-    const {
         align,
-        rotate,
     } = jscad.transforms
 
     const {
@@ -255,8 +250,9 @@ const interlockDovetailPanelInit = ({ jscad, swcadJs }) => {
      * @param {number[]} opts.panelLevels - describes top and bottom points for panels.
      * @param {number} opts.dovetailLength
      * @param {string} opts.type
-     * @param {string} opts.bodyType
-     * @param {string} opts.positionType
+     * @param {string} opts.bodyType - one of ['solid', 'mesh', 'lattice', 'minimal']
+     * @param {string} opts.positionType - one of ['face', 'side']
+     * @param {boolean} opts.omitBottomPanelBeam
      * @param {number} opts.fitGap
      * @returns {Array.<(geom3|Object.<string, geom3>|Object.<string, any>)>} Array with model, parts, and properties
      * @memberof newModelParent

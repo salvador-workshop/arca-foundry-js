@@ -506,7 +506,11 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
      * @param {number} opts.thickness - thickness of this panel
      * @param {number} opts.postThickness - thickness of post/beam that fits against this panel
      * @param {string} opts.type - one of ['wrap', 'flush']
+     * @param {string} opts.panelType - one of ['solid', 'mesh', 'lattice', 'minimal']
      * @param {number} opts.fitGap
+     * @param {boolean} opts.isOpen - if true, does not render the central panel body
+     * @param {boolean} opts.hasCutCorners - if true, cuts corners to fit posts
+     * @param {number[]} opts.cornerSize - corner post cross-section size (use when `hasCutCorners == true`)
      * @returns {Array.<(geom3|Object.<string, geom3>|Object.<string, any>)>} Array with model, parts, and properties
      * @memberof newModelParent
      */

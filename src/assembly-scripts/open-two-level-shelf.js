@@ -75,7 +75,7 @@ const getParameterDefinitions = () => {
  * @returns `geom3` or `geom3[]`
  */
 function main(params) {
-    console.log('[BASIC BOX] input parameters', params)
+    console.log('[OPEN TWO-LEVEL SHELF] input parameters', params)
     const {
         length,
         width,

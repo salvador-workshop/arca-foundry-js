@@ -327,7 +327,9 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
      * @param {number[]} opts.backingwidth - width of backing panel
      * @param {number} opts.thickness - thickness of this panel
      * @param {number} opts.postThickness - thickness of post/beam that fits against this panel
-     * @param {string} opts.type - one of ['wrap', 'flush']
+     * @param {string} opts.type - one of ['wrap', 'flush', 'lip']
+     * @param {string} opts.panelType - one of ['solid', 'mesh', 'lattice', 'minimal']
+     * @param {boolean} opts.hasBottomLip
      * @param {number} opts.fitGap
      * @returns {Array.<(geom3|Object.<string, geom3>|Object.<string, any>)>} Array with model, parts, and properties
      * @memberof newModelParent
