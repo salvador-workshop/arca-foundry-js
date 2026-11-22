@@ -216,6 +216,18 @@ function main() {
         type: 'lip'
     })[0]
 
+    const gBacking4 = groovedBacking({
+        ...groovedShelfOpts,
+        type: 'flush',
+        hasBottomLip: true,
+    })[0]
+
+    const gBacking5 = groovedBacking({
+        ...groovedShelfOpts,
+        type: 'lip',
+        hasBottomLip: true,
+    })[0]
+
     const modelRow1 = [
         // dPost1,
         // dPost2,
@@ -244,6 +256,8 @@ function main() {
         gBacking1,
         gBacking2,
         gBacking3,
+        gBacking4,
+        gBacking5,
     ]
 
     const outModels1 = modelRow1.map((oModel, idx) => {

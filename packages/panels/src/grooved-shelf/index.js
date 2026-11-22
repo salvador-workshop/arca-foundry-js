@@ -158,10 +158,10 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
         const footingWidth = supportSize[1]
 
         const wrapExtensionWidth = thickness + fitGap
-        const panelExtensiontWidth = type == 'flush' ? 0 : wrapExtensionWidth * 2
+        const panelExtensionWidth = type == 'flush' ? 0 : wrapExtensionWidth * 2
         const panelSize = [
-            supportSize[0] + panelExtensiontWidth,
-            supportSize[1] + panelExtensiontWidth,
+            supportSize[0] + panelExtensionWidth,
+            supportSize[1] + panelExtensionWidth,
         ]
         const panelLength = panelSize[0]
         const panelWidth = panelSize[1]

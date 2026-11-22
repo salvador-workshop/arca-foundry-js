@@ -50,6 +50,7 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             opts: {
                 type: 'wrap',
                 panelType: 'solid',
+                hasBottomLip: false,
             },
             dims: {
                 supportSpan: math.inchesToMm(2),
@@ -74,6 +75,7 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             postThickness: defaultValues.dims.postThickness,
             type: defaultValues.opts.type,
             panelType: defaultValues.opts.panelType,
+            hasBottomLip: defaultValues.opts.hasBottomLip,
             fitGap: defaultValues.dims.fitGap,
         }
 
@@ -102,6 +104,7 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             postThickness = defaults.opts.postThickness,
             type = defaults.opts.type,
             panelType = defaults.opts.panelType,
+            hasBottomLip = defaults.opts.hasBottomLip,
             fitGap = defaults.opts.fitGap,
         } = opts
 
@@ -112,6 +115,7 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             postThickness,
             type,
             panelType,
+            hasBottomLip,
             fitGap,
         }
 
@@ -136,23 +140,25 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             postThickness,
             type,
             panelType,
+            hasBottomLip,
             fitGap,
         } = opts
 
         //----------------------------------------
         // Prop calculations
 
-        let panelExtensiontWidth = 0
+        const lipExtWidth = postThickness / 2
+        let panelExtensionWidth = 0
         if (type == 'wrap') {
             const wrapExtensionWidth = thickness + fitGap
-            panelExtensiontWidth = wrapExtensionWidth * 2
+            panelExtensionWidth = wrapExtensionWidth * 2
         } else if (type == 'lip') {
-            const lipExt = postThickness / 2
-            panelExtensiontWidth = lipExt * -2
+            const panelExtDiff = postThickness - lipExtWidth
+            panelExtensionWidth = panelExtDiff * -2
         }
 
         const panelSize = [
-            supportSpan + panelExtensiontWidth,
+            supportSpan + panelExtensionWidth,
             backingwidth,
         ]
         const panelLength = panelSize[0]
@@ -174,6 +180,7 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
         const modelOpts = {
             type,
             panelType,
+            hasBottomLip,
         }
 
         /** Various dimensions for model */
@@ -191,6 +198,7 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             grooveWidth,
             grooveHeight,
             grooveWallHeight,
+            lipExtWidth,
         }
 
         /** Various key points for model */
@@ -259,6 +267,8 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             supportSpan,
             backingwidth,
             grooveWallHeight,
+            hasBottomLip,
+            lipExtWidth,
         } = opts
 
         const intMargin = postThickness + fitGap
@@ -272,7 +282,7 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             ]
         })
 
-        const intWalls = union(
+        const intWalls = [
             align({
                 modes: ['min', 'center', 'center'],
                 relativeTo: [innerFtgEdgeDistX / -2, 0, 0]
@@ -281,9 +291,27 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
                 modes: ['max', 'center', 'center'],
                 relativeTo: [innerFtgEdgeDistX / 2, 0, 0]
             }, intGrooveWallY),
-        )
+        ]
 
-        return intWalls
+        if (hasBottomLip) {
+            let edgeLip = cuboid({
+                size: [
+                    innerFtgEdgeDistX,
+                    thickness,
+                    thickness + lipExtWidth,
+                ]
+            })
+            edgeLip = align({
+                modes: ['center', 'min', 'center'],
+                relativeTo: [0, backingwidth / -2, 0]
+            }, edgeLip)
+            intWalls.push(edgeLip)
+        }
+
+
+        const intWallAssembly = union(...intWalls)
+
+        return intWallAssembly
     }
 
 
@@ -312,6 +340,7 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
         const {
             type,
             panelType,
+            hasBottomLip,
         } = modelProperties.opts
 
         const {
@@ -325,6 +354,7 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             panelLength,
             panelWidth,
             grooveWallHeight,
+            lipExtWidth,
         } = modelProperties.dims
 
         //----------------------------------------
@@ -345,6 +375,8 @@ const groovedBackingInit = ({ jscad, swcadJs }) => {
             backingwidth,
             footingWidth,
             grooveWallHeight,
+            hasBottomLip,
+            lipExtWidth,
         })
         let extGrooveWalls = exteriorGrooveWalls({
             thickness,
