@@ -119,7 +119,7 @@ function main(params) {
         thickness: panelThickness,
         postThickness,
         panelType,
-        type: 'wrap',
+        type: 'flush',
         fitGap,
     }
 

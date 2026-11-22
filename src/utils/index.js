@@ -39,9 +39,12 @@ const directories = {
 
 const projectTypes = {
     basicBox: { id: 'basic-box', description: '' },
+    basicBoxHanger: { id: 'basic-box-hanger', description: '' },
     mouldOnePart: { id: 'mould-one-part', description: '' },
     mouldTwoPart: { id: 'mould-two-part', description: '' },
+    oneLevelShelf: { id: 'one-level-shelf', description: '' },
     openTwoLevelShelf: { id: 'open-two-level-shelf', description: '' },
+    twoLevelShelf: { id: 'two-level-shelf', description: '' },
 }
 
 
@@ -60,9 +63,12 @@ for (const projType in projectTypes) {
 
 const scriptPaths = {
     basicBox: projectScriptPaths['basicBox'],
+    basicBoxHanger: projectScriptPaths['basicBoxHanger'],
     mouldOnePart: projectScriptPaths['mouldOnePart'],
     mouldTwoPart: projectScriptPaths['mouldTwoPart'],
+    oneLevelShelf: projectScriptPaths['oneLevelShelf'],
     openTwoLevelShelf: projectScriptPaths['openTwoLevelShelf'],
+    twoLevelShelf: projectScriptPaths['twoLevelShelf'],
 }
 
 const filenames = {
