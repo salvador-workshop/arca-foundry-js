@@ -66,8 +66,8 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
             points: {},
             components: {},
             types: {
-                wrap: { id: 'wrap', desc: 'Base w/ groove completely wrapping around beam.' },
-                flush: { id: 'flush', desc: 'Base w/ groove partially wrapping around beam.' },
+                wrap: { id: 'wrap', desc: 'Shelf w/ groove completely wrapping around beam.' },
+                flush: { id: 'flush', desc: 'Shelf w/ groove partially wrapping around beam.' },
             },
         }
 
@@ -158,10 +158,10 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
         const footingWidth = supportSize[1]
 
         const wrapExtensionWidth = thickness + fitGap
-        const panelExtensiontWidth = type == 'flush' ? 0 : wrapExtensionWidth * 2
+        const panelExtensionWidth = type == 'flush' ? 0 : wrapExtensionWidth * 2
         const panelSize = [
-            supportSize[0] + panelExtensiontWidth,
-            supportSize[1] + panelExtensiontWidth,
+            supportSize[0] + panelExtensionWidth,
+            supportSize[1] + panelExtensionWidth,
         ]
         const panelLength = panelSize[0]
         const panelWidth = panelSize[1]
@@ -506,7 +506,11 @@ const groovedShelfInit = ({ jscad, swcadJs }) => {
      * @param {number} opts.thickness - thickness of this panel
      * @param {number} opts.postThickness - thickness of post/beam that fits against this panel
      * @param {string} opts.type - one of ['wrap', 'flush']
+     * @param {string} opts.panelType - one of ['solid', 'mesh', 'lattice', 'minimal']
      * @param {number} opts.fitGap
+     * @param {boolean} opts.isOpen - if true, does not render the central panel body
+     * @param {boolean} opts.hasCutCorners - if true, cuts corners to fit posts
+     * @param {number[]} opts.cornerSize - corner post cross-section size (use when `hasCutCorners == true`)
      * @returns {Array.<(geom3|Object.<string, geom3>|Object.<string, any>)>} Array with model, parts, and properties
      * @memberof newModelParent
      */

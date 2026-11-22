@@ -2,10 +2,6 @@
 
 const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
     const {
-        cuboid,
-    } = jscad.primitives
-
-    const {
         align,
         rotate,
     } = jscad.transforms
@@ -305,7 +301,6 @@ const interlockDovetailFrameInit = ({ jscad, swcadJs }) => {
 
         let frameAssembly = leftPost
 
-        console.log(beamLevels)
         const beams = beamLevels.map(beamTopLevel => {
             return align({
                 modes: ['center', 'max', 'min'],
