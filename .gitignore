@@ -169,11 +169,13 @@ input/*
 # Temporary internal files
 internal
 
-# Example files (feel free to delete)
-!input/example1/
-!input/example2/
-!input/mould-example-1/
-!input/mould-example-2/
-!input/mould-example-3/
-!input/box-example-1/
-!input/shelf-example-1/
+# Example files
+# Feel free to delete and replace with your own files
+!input/basic-box/
+!input/basic-box-hanger/
+!input/mould-1/
+!input/mould-2/
+!input/mould-3/
+!input/one-level-shelf/
+!input/open-two-level-shelf/
+!input/two-level-shelf/

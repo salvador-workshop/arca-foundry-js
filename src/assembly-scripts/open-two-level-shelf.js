@@ -15,6 +15,7 @@ const footingsModule = require('footings')
 
 const {
     interlockDovetailFrame: interlockDovetailFrameModule,
+    interlockDovetailPanel: interlockDovetailPanelModule,
     groovedShelf: groovedShelfModule,
 } = panelsModule
 
@@ -23,6 +24,7 @@ const {
 } = footingsModule
 
 const interlockDovetailFrame = interlockDovetailFrameModule.init({ jscad, swcadJs })
+const interlockDovetailPanel = interlockDovetailPanelModule.init({ jscad, swcadJs })
 const groovedShelf = groovedShelfModule.init({ jscad, swcadJs })
 const rectangularPostFoot = rectangularPostFootModule.init({ jscad, swcadJs })
 
@@ -105,18 +107,32 @@ function main(params) {
         fitGap,
     }
 
-    const facePanel = interlockDovetailFrame({
+    const panelHt = math.inchesToMm(0.375)
+    const midLevel = height / 2
+    const topLevel = height
+
+    const facePanel = interlockDovetailPanel({
         ...interDovetailFrameOpts,
+        bodyType: 'solid',
         size: [facePanelWidth, height],
-        beamLevels: [height / 2, height],
+        panelLevels: [
+            [midLevel - panelHt, midLevel],
+            [topLevel - panelHt, topLevel],
+        ],
         positionType: 'face',
+        omitBottomPanelBeam: true,
     })[0]
 
-    const sidePanel = interlockDovetailFrame({
+    const sidePanel = interlockDovetailPanel({
         ...interDovetailFrameOpts,
+        bodyType: 'solid',
         size: [sidePanelWidth, height],
-        beamLevels: [height / 2, height],
+        panelLevels: [
+            [midLevel - panelHt, midLevel],
+            [topLevel - panelHt, topLevel],
+        ],
         positionType: 'side',
+        omitBottomPanelBeam: true,
     })[0]
 
     // ----------------------------------------

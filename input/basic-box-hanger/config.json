@@ -1,0 +1,13 @@
+{
+    "type": "basicBoxHanger",
+    "metadata": {
+        "name": "Demo: Simple Box 02",
+        "id": "SBX",
+        "serialNumber": "0002"
+    },
+    "parameters": {
+        "length": 101.6,
+        "width": 76.2,
+        "height": 76.2
+    }
+}
