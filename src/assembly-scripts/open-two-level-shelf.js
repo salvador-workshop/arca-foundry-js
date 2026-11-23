@@ -113,6 +113,7 @@ function main(params) {
 
     const facePanel = interlockDovetailPanel({
         ...interDovetailFrameOpts,
+        bodyType: 'solid',
         size: [facePanelWidth, height],
         panelLevels: [
             [midLevel - panelHt, midLevel],
@@ -124,6 +125,7 @@ function main(params) {
 
     const sidePanel = interlockDovetailPanel({
         ...interDovetailFrameOpts,
+        bodyType: 'solid',
         size: [sidePanelWidth, height],
         panelLevels: [
             [midLevel - panelHt, midLevel],

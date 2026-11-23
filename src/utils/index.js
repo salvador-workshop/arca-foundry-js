@@ -58,7 +58,7 @@ const projectScriptPaths = {}
 for (const projType in projectTypes) {
     const currentProjScriptName = `${projectTypes[projType].id}.js`
     projectScriptNames[projType] = currentProjScriptName
-    projectScriptPaths[projType] = join(assemblyScriptDir, currentProjScriptName)
+        projectScriptPaths[projType] = join(assemblyScriptDir, currentProjScriptName)
 }
 
 const scriptPaths = {

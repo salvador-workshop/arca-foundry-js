@@ -1,0 +1,13 @@
+{
+    "type": "openTwoLevelShelf",
+    "metadata": {
+        "name": "Demo: Shelf 02",
+        "id": "SHLF",
+        "serialNumber": "0002"
+    },
+    "parameters": {
+        "length": 101.6,
+        "width": 101.6,
+        "height": 101.6
+    }
+}

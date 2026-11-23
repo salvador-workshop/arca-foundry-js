@@ -1,5 +1,5 @@
 {
-    "type": "openTwoLevelShelf",
+    "type": "oneLevelShelf",
     "metadata": {
         "name": "Demo: Shelf 01",
         "id": "SHLF",

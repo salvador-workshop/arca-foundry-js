@@ -111,13 +111,14 @@ function main(params) {
     const panelHt = math.inchesToMm(0.375)
     const topLevel = height
 
-    const frontPanel = interlockDovetailFrame({
+    const frontPanel = interlockDovetailPanel({
         ...interDovetailFrameOpts,
         size: [facePanelWidth, height],
-        beamLevels: [
+        panelLevels: [
             [topLevel - panelHt, topLevel],
         ],
         positionType: 'face',
+        bodyType: 'solid',
         omitBottomPanelBeam: true,
     })[0]
 
@@ -154,11 +155,7 @@ function main(params) {
     }
 
     const topShelf = groovedShelf(groovedShelfOpts)[0]
-    const midShelf = groovedShelf({
-        ...groovedShelfOpts,
-        hasCutCorners: true,
-        cornerSize: postSize,
-    })[0]
+
 
     // ----------------------------------------
     // Setting up feet
@@ -178,7 +175,6 @@ function main(params) {
         rearPanel,
         sidePanel,
         topShelf,
-        midShelf,
         foot,
     ]
 }

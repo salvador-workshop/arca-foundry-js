@@ -1,6 +1,21 @@
 "use strict"
 
 const jscad = require('@jscad/modeling')
+
+const {
+    cuboid, 
+    cylinder, 
+} = jscad.primitives
+
+const {
+    subtract,
+    union,
+ } = jscad.booleans
+
+const {
+    align,
+ } = jscad.transforms
+
 const swcadJs = require('swcad-js').init({ jscad });
 
 const {
@@ -13,11 +28,11 @@ const projectConfig = projectConfigContent[0]
 const panelsModule = require('panels')
 
 const {
-    interlockDovetailFrame: interlockDovetailFrameModule,
+    interlockDovetailPanel: interlockDovetailPanelModule,
     groovedShelf: groovedShelfModule,
 } = panelsModule
 
-const interlockDovetailFrame = interlockDovetailFrameModule.init({ jscad, swcadJs })
+const interlockDovetailPanel = interlockDovetailPanelModule.init({ jscad, swcadJs })
 const groovedShelf = groovedShelfModule.init({ jscad, swcadJs })
 
 
@@ -99,13 +114,53 @@ function main(params) {
         fitGap,
     }
 
-    const facePanel = interlockDovetailFrame({
+    const hangerHoleDiam = math.inchesToMm(9 / 64)
+    const hangerEdgeThickness = math.inchesToMm(3 / 16)
+    const hangerWidth = hangerEdgeThickness * 2 + hangerHoleDiam
+    const hangerBlank = cuboid({
+        size: [
+            hangerWidth,
+            hangerWidth,
+            panelThickness
+        ]
+    })
+    const hangerHoleCutaway = cylinder({
+        radius: (hangerHoleDiam + fitGap) / 2,
+        height: panelThickness * 2
+    })
+    const hanger = subtract(
+        hangerBlank,
+        hangerHoleCutaway
+    )
+
+    const widthThird = facePanelWidth / 3
+    const hangerPt1 = [widthThird / -2, 0, 0]
+    const hangerPt2 = [widthThird / 2, 0, 0]
+
+    let rearPanel = interlockDovetailPanel({
+        ...interDovetailPanelOpts,
+        size: [facePanelWidth, height],
+        positionType: 'face',
+    })[0]
+    rearPanel = union(
+        align({ modes: ['center', 'max', 'min'] }, rearPanel),
+        align({
+            modes: ['center', 'min', 'min'],
+            relativeTo: hangerPt1,
+        }, hanger),
+        align({
+            modes: ['center', 'min', 'min'],
+            relativeTo: hangerPt2,
+        }, hanger),
+    )
+
+    const frontPanel = interlockDovetailPanel({
         ...interDovetailPanelOpts,
         size: [facePanelWidth, height],
         positionType: 'face',
     })[0]
 
-    const sidePanel = interlockDovetailFrame({
+    const sidePanel = interlockDovetailPanel({
         ...interDovetailPanelOpts,
         size: [sidePanelWidth, height],
         positionType: 'side',
@@ -126,7 +181,8 @@ function main(params) {
     const basePanel = groovedShelf(groovedShelfOpts)[0]
 
     return [
-        facePanel,
+        rearPanel,
+        frontPanel,
         sidePanel,
         basePanel,
     ]

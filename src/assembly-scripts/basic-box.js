@@ -14,10 +14,12 @@ const panelsModule = require('panels')
 
 const {
     interlockDovetailFrame: interlockDovetailFrameModule,
+    interlockDovetailPanel: interlockDovetailPanelModule,
     groovedShelf: groovedShelfModule,
 } = panelsModule
 
 const interlockDovetailFrame = interlockDovetailFrameModule.init({ jscad, swcadJs })
+const interlockDovetailPanel = interlockDovetailPanelModule.init({ jscad, swcadJs })
 const groovedShelf = groovedShelfModule.init({ jscad, swcadJs })
 
 
@@ -99,13 +101,13 @@ function main(params) {
         fitGap,
     }
 
-    const facePanel = interlockDovetailFrame({
+    const facePanel = interlockDovetailPanel({
         ...interDovetailPanelOpts,
         size: [facePanelWidth, height],
         positionType: 'face',
     })[0]
 
-    const sidePanel = interlockDovetailFrame({
+    const sidePanel = interlockDovetailPanel({
         ...interDovetailPanelOpts,
         size: [sidePanelWidth, height],
         positionType: 'side',
