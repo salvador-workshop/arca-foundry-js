@@ -51,7 +51,7 @@ Build moulds around an STL model by running:
 
 `npm run build-project -- "mould-1"`
 
-The mould object must be named `model.stl` and placed in the appropriate directory in `input/` (in the above case, `input/mould-example-1/`). That project's output would then be placed in `output/mould-example-1/`
+The mould object must be named `model.stl` and placed in the appropriate directory in `input/` (in the above case, `input/mould-1/`). That project's output would then be placed in `output/mould-1/`
 
 ### `oneLevelShelf`
 
