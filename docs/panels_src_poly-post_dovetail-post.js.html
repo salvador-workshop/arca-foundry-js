@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: panels/src/poly-post/dovetail-post.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: panels/src/poly-post/dovetail-post.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const dovetailPostInit = ({ jscad, swcadJs }) => {
+    const {
+        cuboid,
+    } = jscad.primitives
+
+    const {
+        align,
+        rotate,
+    } = jscad.transforms
+
+    const {
+        intersect,
+        subtract,
+        union,
+    } = jscad.booleans
+
+    const {
+        extrudeLinear,
+    } = jscad.extrusions
+
+    const { TAU } = jscad.maths.constants
+
+    const {
+        standards,
+    } = swcadJs.data
+
+    const {
+        math,
+        position,
+    } = swcadJs.calcs
+
+    const {
+        connections,
+    } = swcadJs.profiles
+
+
+    //------------------------------------------------------------
+    // Model Internal Functions
+    //------------------------------------------------------------
+
+
+    /**
+     * Builds default values and opts for the model
+     * @param {*} opts 
+     * @returns default values and opts
+     * @memberof newModelParent
+     * @access private
+     */
+    const dovetailPostDefaults = () => {
+        const defaultValues = {
+            constants: {
+                interfaceThickness: standards.INTERFACE_THICKNESS,
+                fitGap: standards.FIT_GAP,
+            },
+            opts: {
+                type: 'male'
+            },
+            dims: {
+                length: math.inchesToMm(3),
+                thickness: 5,
+                dovetailLength: math.inchesToMm(0.625),
+                fitGap: standards.FIT_GAP,
+            },
+            points: {},
+            components: {},
+            types: {
+                male: { id: 'male', desc: 'Male dovetail post' },
+                female: { id: 'female', desc: 'Female dovetail post' },
+            },
+        }
+
+        const defaultOpts = {
+            length: defaultValues.dims.length,
+            thickness: defaultValues.dims.thickness,
+            dovetailLength: defaultValues.dims.dovetailLength,
+            type: defaultValues.opts.type,
+            fitGap: defaultValues.dims.fitGap,
+        }
+
+        return {
+            opts: defaultOpts,
+            vals: defaultValues,
+        }
+    }
+
+
+    /**
+     * Initializes options with user input
+     * @param {*} opts 
+     * @returns model properties
+     * @memberof newModelParent
+     * @access private
+     */
+    const dovetailPostOpts = (opts) => {
+        const defaults = dovetailPostDefaults()
+
+        // User options
+        const {
+            length = defaults.opts.length,
+            thickness = defaults.opts.thickness,
+            dovetailLength = defaults.opts.dovetailLength,
+            type = defaults.opts.type,
+            fitGap = defaults.opts.fitGap,
+        } = opts
+
+        const initOpts = {
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        }
+
+
+        return initOpts
+    }
+
+
+    /**
+     * Builds model properties from the given opts
+     * @param {*} opts 
+     * @returns model properties
+     * @memberof newModelParent
+     * @access private
+     */
+    const dovetailPostProps = (opts) => {
+        const defaults = dovetailPostDefaults()
+
+        const {
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        } = opts
+
+        //----------------------------------------
+        // Prop calculations
+
+        //----------------------------------------
+        // Preparing Model Properties, Dimensions
+
+        /** Constant values for model */
+        const modelConstants = defaults.vals.constants
+
+        /** Derived user options for the model */
+        const modelOpts = {
+            type,
+        }
+
+        /** Various dimensions for model */
+        const modelDims = {
+            length,
+            thickness,
+            dovetailLength,
+            fitGap,
+        }
+
+        /** Various key points for model */
+        const modelPoints = defaults.vals.points
+
+        /** Components used by model */
+        const modelComponents = defaults.vals.components
+
+        //----------------------------------------
+        // MODEL PROPERTIES
+        // Properties accessible to all model functions.
+
+        const modelProperties = {
+            constants: modelConstants,
+            opts: modelOpts,
+            dims: modelDims,
+            points: modelPoints,
+            components: modelComponents,
+        }
+
+
+        return modelProperties
+    }
+
+
+    //------------------------------------------------------------
+    // Secondary Modelling Functions
+    //------------------------------------------------------------
+
+
+    const dovetailPostBlank = (opts) => {
+        const {
+            length,
+            thickness,
+            type,
+            fitGap,
+        } = opts
+
+        const fitAdj = fitGap / 2
+        const fitHeight = thickness - fitAdj
+        const cutawayHeight = thickness / 2
+        const cutawayWidth = thickness / 2 + fitAdj
+
+        let postBlank = cuboid({ size: [length, thickness, fitHeight] })
+        postBlank = align({ modes: ['center', 'max', 'max'] }, postBlank)
+
+        let cutaway = cuboid({ size: [length, cutawayWidth, cutawayHeight] })
+        cutaway = align({ modes: ['center', 'max', 'max'] }, cutaway)
+
+        let dPostBlank = subtract(postBlank, cutaway)
+        if (type == 'female') {
+            dPostBlank = rotate([TAU / 4, 0, 0], dPostBlank)
+            dPostBlank = rotate([0, 0, TAU / 2], dPostBlank)
+        }
+
+        return position.ctrMin(dPostBlank)
+    }
+
+    const dovetailPostDovetailProfile = (opts) => {
+        const {
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        } = opts
+
+        const connectionEdgeMargin = thickness / 2
+        const dovetailsGap = connectionEdgeMargin * 2
+        const dovetailUnits = Math.floor(length / dovetailLength)
+
+        const dovetailRowProfiles = connections.tabRow.dovetailRow({
+            size: [length, thickness * 1.5],
+            numConnectors: dovetailUnits,
+            interfaceMargin: [dovetailsGap, connectionEdgeMargin],
+            fitGap,
+        })[0]
+
+        const maleDovetailRowProfile = dovetailRowProfiles[0]
+        const femaleDovetailRowProfile = dovetailRowProfiles[1]
+
+        let dPostDovetailProfile = maleDovetailRowProfile
+        if (type == 'female') {
+            dPostDovetailProfile = femaleDovetailRowProfile
+            dPostDovetailProfile = rotate([0, 0, TAU / 2], dPostDovetailProfile)
+        }
+
+        return dPostDovetailProfile
+    }
+
+    const dovetailPostDovetailEdge = (opts) => {
+        const {
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        } = opts
+
+        const extrudeHeightGrooves = thickness * 1.25
+        const extrudeHeightDovetails = thickness * 0.75
+        const dPostDovetailProfile = dovetailPostDovetailProfile({
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        })
+
+        let dovetailEdge = null
+        if (type == 'female') {
+            const dPostDovetailGrooves = extrudeLinear({ height: extrudeHeightGrooves }, dPostDovetailProfile)
+            dovetailEdge = dPostDovetailGrooves
+        } else {
+            const dPostDovetails = extrudeLinear({ height: extrudeHeightDovetails }, dPostDovetailProfile)
+            dovetailEdge = dPostDovetails
+            dovetailEdge = rotate([TAU / 4, 0, 0], dovetailEdge)
+        }
+
+        return dovetailEdge
+    }
+
+
+    //------------------------------------------------------------
+    // Primary Modelling Functions
+    //------------------------------------------------------------
+
+
+    /**
+     * Post with interlocking dovetails
+     * @param {object} opts - Options
+     * @param {number} opts.length
+     * @param {number} opts.thickness
+     * @param {number} opts.dovetailLength
+     * @param {string} opts.type - 'male' or 'female'
+     * @param {number} opts.fitGap
+     * @returns {geom3} JSCAD 3D geometry
+     */
+    const dovetailPost = (opts) => {
+        const inOpts = dovetailPostOpts(opts)
+        const {
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        } = inOpts
+
+        const dPostBlank = dovetailPostBlank({
+            length,
+            thickness,
+            type,
+            fitGap,
+        })
+        const dPostDovetailEdge = dovetailPostDovetailEdge({
+            length,
+            thickness,
+            dovetailLength,
+            type,
+            fitGap,
+        })
+
+        let dovetailPostAssembly = null
+        if (type == 'male') {
+            dovetailPostAssembly = union(
+                align({ modes: ['center', 'max', 'min'] }, dPostBlank),
+                align({ modes: ['center', 'max', 'min'] }, dPostDovetailEdge),
+            )
+        } else {
+            dovetailPostAssembly = intersect(
+                align({ modes: ['center', 'min', 'min'] }, dPostBlank),
+                align({ modes: ['center', 'min', 'min'] }, dPostDovetailEdge),
+            )
+        }
+
+        return position.ctr(dovetailPostAssembly)
+    }
+
+    return dovetailPost
+}
+
+module.exports = {
+    init: dovetailPostInit,
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="hooks.html">hooks</a></li><li><a href="pegboard.html">pegboard</a></li></ul><h3>Global</h3><ul><li><a href="global.html#flatOnePieceMould">flatOnePieceMould</a></li><li><a href="global.html#flatOpenMould">flatOpenMould</a></li><li><a href="global.html#flatSheetMould">flatSheetMould</a></li><li><a href="global.html#flatTwoPieceMould">flatTwoPieceMould</a></li><li><a href="global.html#main">main</a></li><li><a href="global.html#radialMould">radialMould</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Nov 25 2026 11:07:34 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

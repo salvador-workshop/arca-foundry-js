@@ -19,8 +19,6 @@
     "jscad"
   ],
   "license": "MIT",
-  "dependencies": {
-    "swcad-js": "^0.14.7"
-  },
+  "dependencies": {},
   "devDependencies": {}
 }
